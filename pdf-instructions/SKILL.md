@@ -16,16 +16,15 @@ description: 'Создание PDF-инструкций со скриншота�
 
 ## Доступы (до первой съёмки)
 
-Скилл общий для всех проектов, поэтому доступов в нём нет. Порядок:
+Скилл общий для всех проектов, поэтому доступов в нём нет:
 
-1. `.github/PROJECT-ACCESS.md` — особенности проекта: адрес стенда, как входить,
-   какие переменные с доступами нужны.
-2. `.github/.env.local` — значения: `RAD_BASE_URL`, `RAD_ADMIN_LOGIN` (или
-   `RAD_ADMIN_EMAIL`), `RAD_ADMIN_PASSWORD`.
-3. `scripts/shot.mjs` читает эти файлы сам, а переменные окружения имеют приоритет
-   над файлами — разовый запуск можно переопределить в строке команды.
+1. `.github/skills/project-features.md` — какие переменные нужны и что за стенд.
+2. `.github/skills/.env.local` — значения.
+3. `scripts/shot.mjs` читает оба файла сам (окружение имеет приоритет над файлами).
 4. **Нет доступов — спросить у пользователя.** Не угадывать пароль, не заводить
    пользователя, не вставлять доступы в HTML и скриншоты.
+
+Сам вход в Bitrix — скилл `bitrix-login`: адрес моста и порядок авторизации там.
 
 ## Шаг 0 — изучи эталон (обязательно, до первой команды)
 
@@ -128,7 +127,7 @@ python3 .github/skills/pdf-instructions/scripts/render-pdf-pages.py \
 Одна команда, один размер окна, один файл описания шагов. Ничего не вырезается вручную.
 
 ```bash
-# из корня проекта: скрипт сам читает доступы из .github/.env.local
+# из корня проекта: скрипт сам читает доступы из .github/skills/.env.local
 node .github/skills/pdf-instructions/scripts/shot.mjs \
      .github/docs/instructions/<slug>/tasks.json \
      --out .github/docs/instructions/<slug>/img/src \
@@ -145,7 +144,7 @@ RAD_ADMIN_EMAIL='<email>' RAD_ADMIN_PASSWORD='<password>' \
 `tasks.json` — единственный источник правды: `url`, `waitFor`, `actions`, `scrollTo`,
 `marks` (`sel` + `expect` + `style`) и `arrows` (`from` → `to`, номера пометок). Скрипт сам
 пишет временный мост авторизации, входит, снимает и удаляет мост. `base` можно не указывать —
-возьмётся `RAD_BASE_URL` из `.github/.env.local`.
+возьмётся `RAD_BASE_URL` из `.github/skills/.env.local`.
 
 ```json
 {

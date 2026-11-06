@@ -8,6 +8,7 @@
 | Папка | Что внутри |
 |---|---|
 | `bitrix-component/` | компоненты, шаблоны, ассеты, миграции Bitrix (D7, Controllerable, nginx) |
+| `bitrix-login/` | вход в Bitrix под администратором: мост вместо формы, LOGIN или EMAIL |
 | `code-review/` | обязательное ревью диффа перед коммитом |
 | `codebase-memory/` | порядок поиска по коду: граф → grep |
 | `feature-workflow/` | план фаз, папка задачи, definition of done |
@@ -17,47 +18,48 @@
 | `pdf-instructions/` | PDF-инструкции со скриншотами, эталон в `example/` |
 | `ui-testing-playwright/` | проверка интерфейса в браузере |
 | `copilot-instructions.md` | копия `.github/copilot-instructions.md` проекта RAD Aggregator |
-| `templates/` | шаблоны `.env.example` и `PROJECT-ACCESS.example.md` |
+| `templates/` | `env.example` и `project-features.example.md` для нового проекта |
 | `tools/` | служебные скрипты репозитория |
 
 ## Как подключить в проект
 
 ```bash
 cd <project>/.github
-git clone git@github.com:nacukisubaru/ai-agent-skills.git skills-tmp
-rsync -a --exclude .git skills-tmp/ skills/
-rm -rf skills-tmp
+git clone git@github.com:nacukisubaru/ai-agent-skills.git skills
 ```
 
 Скиллы читаются из `.github/skills/<name>/SKILL.md`. Папки без `SKILL.md`
 (`templates`, `tools`, `example`) скиллами не считаются.
 
-## Правило доступов
+## Доступы: где что лежит
 
-**В скиллах и в этом репозитории нет ни одного пароля, логина или адреса стенда.**
-Скилл — общий для всех проектов, доступы — свойство проекта.
+**В скиллах нет ни одного пароля, логина или адреса стенда.** Скилл — общий для всех
+проектов, доступы — свойство проекта. Два локальных файла, оба в `.gitignore`:
+
+```
+.github/skills/project-features.md   # имена переменных + особенности стенда
+.github/skills/.env.local            # значения этих переменных
+```
 
 Порядок для агента:
 
-1. `.github/PROJECT-ACCESS.md` — особенности проекта: адрес, как входить, имена
-   переменных.
-2. `.github/.env.local` — значения. Оба файла в `.gitignore` этого репозитория
-   и в `.gitignore` проекта.
-3. Нужного доступа нет → **спросить у пользователя**. Не подбирать, не заводить
+1. `project-features.md` — какие переменные нужны, адрес, как входить, ожидаемый id.
+2. `.env.local` — значения.
+3. Нужной переменной нет → **спросить у пользователя**. Не подбирать, не заводить
    пользователя, не вставлять доступы в код, скриншоты и отчёты.
 
-Стандартные переменные:
+Вход на платформу — отдельный скилл: для Bitrix это `bitrix-login`. Для другой
+платформы добавляется свой скилл, а `project-features.md` указывает, какой именно.
 
-| Переменная | Назначение |
-|---|---|
-| `RAD_BASE_URL` | адрес стенда |
-| `RAD_ADMIN_LOGIN` | технический логин администратора |
-| `RAD_ADMIN_EMAIL` | почта администратора (мост сам найдёт логин) |
-| `RAD_ADMIN_PASSWORD` | пароль |
+Скрипты скиллов читают `.env.local` сами (`pdf-instructions/scripts/shot.mjs`:
+окружение → `.github/skills/.env.local` → `.github/.env.local` → `.env.local` → `.env`).
 
-Копируйте `templates/env.example` → `.github/.env.local` и
-`templates/PROJECT-ACCESS.example.md` → `.github/PROJECT-ACCESS.md` при подключении
-к новому проекту.
+Копируйте при подключении к новому проекту:
+
+```bash
+cp templates/env.example .env.local
+cp templates/project-features.example.md project-features.md
+```
 
 ## copilot-instructions.md
 
@@ -66,12 +68,13 @@ rm -rf skills-tmp
 затем синхронизируются сюда:
 
 ```bash
-.github/skills/tools/sync-copilot-instructions.sh <project-root>
+tools/sync-copilot-instructions.sh <project-root>
 ```
 
 Без аргумента скрипт берёт `.github/copilot-instructions.md` из текущего каталога.
 
 ## Проверки перед коммитом
 
-- `grep -rn "password\|Пароль" --include=SKILL.md .` — не осталось реальных доступов.
-- В диффе нет `.env`, `PROJECT-ACCESS.md`, скриншотов с личными данными.
+- `grep -rniE "password|пароль" --include=SKILL.md .` — только описания, не значения.
+- `git status --ignored` — `project-features.md` и `.env.local` в игноре.
+- В диффе нет скриншотов с личными данными.

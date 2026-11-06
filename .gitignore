@@ -1,16 +1,15 @@
-# Локальные данные: никогда не коммитить
+# Локальные файлы проекта: никогда не коммитить
 .env
 .env.*
 !.env.example
-PROJECT-ACCESS.md
-**/PROJECT-ACCESS.md
-*.secrets.*
+project-features.md
 *.local.md
+*.secrets.*
 
 # Артефакты съёмки и сборки
 .chrome-profile/
+**/.chrome-profile/
 marks.json
-img/src/.chrome-profile/
 *.log
 
 # Системный мусор

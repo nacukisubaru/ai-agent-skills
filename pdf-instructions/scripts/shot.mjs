@@ -12,11 +12,12 @@
  *   node shot.mjs tasks.json --out ./img --window 1600x1250
  *
  * Доступы админа скрипт читает сам: сначала переменные окружения RAD_ADMIN_LOGIN /
- * RAD_ADMIN_EMAIL / RAD_ADMIN_PASSWORD / RAD_BASE_URL, затем файлы `.github/.env.local`,
- * `.env.local`, `.env` в текущем каталоге (первое найденное значение выигрывает).
- * Что за проект и где лежат доступы — `.github/PROJECT-ACCESS.md`. Переменные окружения
- * имеют приоритет над файлами, поэтому разовый запуск можно переопределить в строке
- * команды. Логин принимается и как LOGIN, и как email: мост сам подставит LOGIN.
+ * RAD_ADMIN_EMAIL / RAD_ADMIN_PASSWORD / RAD_BASE_URL, затем файлы
+ * `.github/skills/.env.local`, `.github/.env.local`, `.env.local`, `.env` в текущем
+ * каталоге (первое найденное значение выигрывает). Имена переменных и особенности
+ * проекта — `.github/skills/project-features.md`. Переменные окружения имеют приоритет
+ * над файлами, поэтому разовый запуск можно переопределить в строке команды.
+ * Логин принимается и как LOGIN, и как email: мост сам подставит LOGIN.
  *
  * tasks.json:
  * {
@@ -65,9 +66,9 @@ const flag = (name, fallback = null) => {
   return i === -1 ? fallback : argv[i + 1];
 };
 
-// Local credentials live outside the repo (see .github/PROJECT-ACCESS.md).
-// Real environment variables still win over the file.
-const ENV_FILES = ['.github/.env.local', '.env.local', '.env'];
+// Local credentials live outside the repo (see .github/skills/project-features.md).
+// Real environment variables still win over the files.
+const ENV_FILES = ['.github/skills/.env.local', '.github/.env.local', '.env.local', '.env'];
 
 function loadEnvFiles(root) {
   const loaded = [];
@@ -514,7 +515,7 @@ async function main() {
 
   try {
     // Логин: только через админку. На публичной части вход с правами админа запрещён.
-    // Доступы берутся из окружения (.github/.env.local), см. .github/PROJECT-ACCESS.md.
+    // Доступы берутся из окружения (.github/skills/.env.local), см. bitrix-login.
     const login = spec.login || {};
     const user = process.env.RAD_ADMIN_LOGIN || process.env.RAD_ADMIN_EMAIL || login.user;
     const pass = process.env.RAD_ADMIN_PASSWORD || login.pass;
@@ -523,9 +524,9 @@ async function main() {
       await loginAdmin(cdp, { base, user, pass, login });
     } else if (needsLogin) {
       throw new Error(
-        'нет доступов для входа. Заполните .github/.env.local (RAD_ADMIN_LOGIN или RAD_ADMIN_EMAIL + RAD_ADMIN_PASSWORD)\n' +
+        'нет доступов для входа. Заполните .github/skills/.env.local (RAD_ADMIN_LOGIN или RAD_ADMIN_EMAIL + RAD_ADMIN_PASSWORD)\n' +
           `  прочитанные env-файлы: ${envSources.length ? envSources.join(', ') : 'нет'}\n` +
-          '  описание проекта: .github/PROJECT-ACCESS.md; если доступов нет и там — спросите пользователя',
+          '  имена переменных: .github/skills/project-features.md; если доступов нет и там — спросите пользователя',
       );
     }
 
