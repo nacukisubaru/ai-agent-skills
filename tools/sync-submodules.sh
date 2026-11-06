@@ -8,9 +8,14 @@
 # project working tree for a normal commit.
 set -uo pipefail
 
-ROOT="${1:-/Users/aleksandrkrestinskij/projects}"
+ROOT="/Users/aleksandrkrestinskij/projects"
 DRY=0
-for arg in "$@"; do [[ "$arg" == "--dry-run" ]] && DRY=1; done
+for arg in "$@"; do
+    case "$arg" in
+        --dry-run) DRY=1 ;;
+        *) ROOT="$arg" ;;
+    esac
+done
 
 SKILLS_REPO="$(cd "$(dirname "$0")/.." && pwd)"
 URL_PATTERN="ai-agent-skills"
@@ -32,7 +37,8 @@ for project in "$ROOT"/*/; do
 
     found=$((found + 1))
     name="$(basename "$project")"
-    before="$(git -C "$project" rev-parse HEAD:.github/skills 2>/dev/null || echo '-')"
+    sha() { git -C "$project" submodule status .github/skills 2>/dev/null | awk '{print $1}' | head -1; }
+    before="$(sha)"; before="${before:--}"
 
     if [[ $DRY -eq 1 ]]; then
         echo "$name: $before (dry-run, не обновляли)"
@@ -45,7 +51,7 @@ for project in "$ROOT"/*/; do
         continue
     fi
 
-    after="$(git -C "$project" rev-parse HEAD:.github/skills 2>/dev/null || echo '-')"
+    after="$(sha)"; after="${after:--}"
     if [[ "$before" == "$after" ]]; then
         echo "$name: $before (без изменений)"
     else
