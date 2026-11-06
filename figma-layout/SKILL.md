@@ -18,12 +18,12 @@ https://www.figma.com/design/{FILE_KEY}/...?node-id={A}-{B}&...
 
 ## Токен
 
-Токен в скилле не хранится. Он лежит в `.github/skills-local/env.local` под именем
+Токен в скилле не хранится. Он лежит в `.github/.env.local` под именем
 `FIGMA_TOKEN` (файл в git не попадает, имена переменных — в `project-features.md`).
 В запросах передаётся заголовком `X-Figma-Token`.
 
 ```bash
-set -a; . .github/skills-local/env.local; set +a
+set -a; . .github/.env.local; set +a
 curl -s -H "X-Figma-Token: $FIGMA_TOKEN" ...
 ```
 

@@ -64,9 +64,13 @@ git submodule update --remote --merge .github/skills   # в одном прое�
 проектов, доступы — свойство проекта. Два локальных файла, оба в `.gitignore`:
 
 ```
-.github/skills-local/project-features.md   # имена переменных + особенности стенда
-.github/skills-local/env.local            # значения этих переменных
+.github/project-features.md   # имена переменных + особенности стенда
+.github/.env.local            # значения этих переменных
 ```
+
+Оба пути уже покрыты `.github/*` в `.gitignore` проекта — отдельная папка для них
+не нужна. Держать их **внутри** `.github/skills` нельзя: это сабмодуль, файл в нём
+попал бы в общий репозиторий скиллов.
 
 Порядок для агента:
 
@@ -82,13 +86,13 @@ git submodule update --remote --merge .github/skills   # в одном прое�
 платформы добавляется свой скилл, а `project-features.md` указывает, какой именно.
 
 Скрипты скиллов читают `.env.local` сами (`pdf-instructions/scripts/shot.mjs`:
-окружение → `.github/skills-local/env.local` → `.github/.env.local` → `.env.local` → `.env`).
+окружение → `.github/.env.local` → `.env.local` → `.env`).
 
 Копируйте при подключении к новому проекту:
 
 ```bash
-cp templates/env.example .env.local
-cp templates/project-features.example.md project-features.md
+cp .github/skills/templates/env.example .github/.env.local
+cp .github/skills/templates/project-features.example.md .github/project-features.md
 ```
 
 ## copilot-instructions.md

@@ -18,8 +18,8 @@ description: 'Создание PDF-инструкций со скриншота�
 
 Скилл общий для всех проектов, поэтому доступов в нём нет:
 
-1. `.github/skills-local/project-features.md` — какие переменные нужны и что за стенд.
-2. `.github/skills-local/env.local` — значения.
+1. `.github/project-features.md` — какие переменные нужны и что за стенд.
+2. `.github/.env.local` — значения.
 3. `scripts/shot.mjs` читает оба файла сам (окружение имеет приоритет над файлами).
 4. **Нет доступов — спросить у пользователя.** Не угадывать пароль, не заводить
    пользователя, не вставлять доступы в HTML и скриншоты.
@@ -127,7 +127,7 @@ python3 .github/skills/pdf-instructions/scripts/render-pdf-pages.py \
 Одна команда, один размер окна, один файл описания шагов. Ничего не вырезается вручную.
 
 ```bash
-# из корня проекта: скрипт сам читает доступы из .github/skills-local/env.local
+# из корня проекта: скрипт сам читает доступы из .github/.env.local
 node .github/skills/pdf-instructions/scripts/shot.mjs \
      .github/docs/instructions/<slug>/tasks.json \
      --out .github/docs/instructions/<slug>/img/src \
@@ -144,7 +144,7 @@ SITE_ADMIN_EMAIL='<email>' SITE_ADMIN_PASSWORD='<password>' \
 `tasks.json` — единственный источник правды: `url`, `waitFor`, `actions`, `scrollTo`,
 `marks` (`sel` + `expect` + `style`) и `arrows` (`from` → `to`, номера пометок). Скрипт сам
 пишет временный мост авторизации, входит, снимает и удаляет мост. `base` можно не указывать —
-возьмётся `SITE_BASE_URL` из `.github/skills-local/env.local`.
+возьмётся `SITE_BASE_URL` из `.github/.env.local`.
 
 ```json
 {

@@ -12,7 +12,7 @@ description: 'Обновление самих скиллов: где лежит 
 | Общий репозиторий скиллов (рабочая копия) | `/Users/aleksandrkrestinskij/projects/skills` |
 | Remote | `git@github.com:nacukisubaru/ai-agent-skills.git`, ветка `main` |
 | В проекте | `.github/skills` — **git submodule** этого репозитория |
-| Локальные данные проекта (в git не идут) | `.github/skills-local/` |
+| Локальные данные проекта (в git не идут) | `.github/project-features.md`, `.github/.env.local` |
 
 ```bash
 cd /Users/aleksandrkrestinskij/projects/skills
@@ -79,7 +79,7 @@ git pull --ff-only         # перед правкой, если работал�
 - Пушить без явного подтверждения пользователя.
 - Пушить в `stage` и `dev` (это не касается репозитория скиллов, у него только `main`).
 - Править `.github/skills/*` внутри проекта вместо `/Users/aleksandrkrestinskij/projects/skills`.
-- Коммитить `.github/skills-local/**` — там доступы; эти пути в `.gitignore`.
+- Коммитить `.github/**` — там доступы; эти пути в `.gitignore`.
 - Оставлять скилл без строки в карте скиллов и без записи в `README.md`.
 - Вставлять в скилл доступы, адреса стендов и названия конкретных проектов:
-  скилл общий, данные проекта — в `skills-local`.
+  скилл общий, данные проекта — в `.github`.
