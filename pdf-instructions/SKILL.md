@@ -137,20 +137,20 @@ node .github/skills/pdf-instructions/scripts/shot.mjs \
 Переменные окружения имеют приоритет над файлом — разовое переопределение:
 
 ```bash
-RAD_ADMIN_EMAIL='<email>' RAD_ADMIN_PASSWORD='<password>' \
+SITE_ADMIN_EMAIL='<email>' SITE_ADMIN_PASSWORD='<password>' \
   node .github/skills/pdf-instructions/scripts/shot.mjs ... 
 ```
 
 `tasks.json` — единственный источник правды: `url`, `waitFor`, `actions`, `scrollTo`,
 `marks` (`sel` + `expect` + `style`) и `arrows` (`from` → `to`, номера пометок). Скрипт сам
 пишет временный мост авторизации, входит, снимает и удаляет мост. `base` можно не указывать —
-возьмётся `RAD_BASE_URL` из `.github/skills/.env.local`.
+возьмётся `SITE_BASE_URL` из `.github/skills/.env.local`.
 
 ```json
 {
   "base": "http://localhost:8080",
   "login": {
-    "bridge": { "path": "project/public/local/rad-tmp-login.php", "url": "/local/rad-tmp-login.php" },
+    "bridge": { "path": "project/public/local/tmp-login.php", "url": "/local/tmp-login.php" },
     "check": "/bitrix/admin/index.php"
   },
   "tasks": [

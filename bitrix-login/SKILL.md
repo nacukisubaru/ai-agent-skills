@@ -25,8 +25,8 @@ description: 'Вход в Bitrix под администратором для п
    не пробовать чужие учётки, не заводить нового пользователя. Ответ дописать
    в `.env.local`, а не в файл скилла.
 
-Стандартные переменные: `RAD_BASE_URL`, `RAD_ADMIN_LOGIN`, `RAD_ADMIN_EMAIL`,
-`RAD_ADMIN_PASSWORD`.
+Стандартные переменные: `SITE_BASE_URL`, `SITE_ADMIN_LOGIN`, `SITE_ADMIN_EMAIL`,
+`SITE_ADMIN_PASSWORD`.
 
 ## Как входить: мост вместо формы
 
@@ -35,7 +35,7 @@ description: 'Вход в Bitrix под администратором для п
 и удаляется сразу после проверки.
 
 1. Создать файл в публичной части проекта, путь из `project-features.md`
-   (обычно `project/public/local/rad-tmp-login.php`):
+   (обычно `project/public/local/tmp-login.php`):
 
 ```php
 <?php
@@ -44,7 +44,7 @@ global $USER;
 header('Content-Type: text/plain; charset=utf-8');
 
 // Bitrix Login() принимает LOGIN, а не email: при входе по почте находим LOGIN.
-function rad_resolve_login(string $value): string
+function shot_resolve_login(string $value): string
 {
     if (strpos($value, '@') === false) {
         return $value;
@@ -53,9 +53,9 @@ function rad_resolve_login(string $value): string
     return $row ? (string)$row['LOGIN'] : $value;
 }
 
-$login = '<RAD_ADMIN_LOGIN или RAD_ADMIN_EMAIL из .env.local>';
-$pass  = '<RAD_ADMIN_PASSWORD из .env.local>';
-$ok = $USER->Login(rad_resolve_login($login), $pass, 'Y');
+$login = '<SITE_ADMIN_LOGIN или SITE_ADMIN_EMAIL из .env.local>';
+$pass  = '<SITE_ADMIN_PASSWORD из .env.local>';
+$ok = $USER->Login(shot_resolve_login($login), $pass, 'Y');
 echo $ok ? 'OK user=' . (int)$USER->GetID() : 'FAIL: ' . $USER->LAST_ERROR;
 ```
 
@@ -72,14 +72,14 @@ echo $ok ? 'OK user=' . (int)$USER->GetID() : 'FAIL: ' . $USER->LAST_ERROR;
 ## Особенности Bitrix, из-за которых вход не работает
 
 - **LOGIN ≠ EMAIL.** `$USER->Login()` принимает только `LOGIN`. В базе он часто
-  технический (`rad_<hash>_<email>`), даже если человек помнит свою почту. Поэтому
+  технический (`prefix_<hash>_<email>`), даже если человек помнит свою почту. Поэтому
   мост сначала ищет пользователя по `EMAIL` и подставляет найденный `LOGIN`.
 - **`USER->LAST_ERROR`** печатать безопасно, пароль туда не попадает; но текст ошибки
   не должен уходить в отчёт вместе с логином.
 - **Капча и коды** на форме входа: повторные неудачные попытки блокируют вход,
   поэтому форма не используется вообще.
 - **Сессия без API-куки.** Мост даёт Bitrix-сессию, но не ставит HttpOnly-куку
-  авторизации приложения (в этом проекте — `rad_auth_token`). Приватный API ответит
+  авторизации приложения (в этом проекте — отдельная кука приложения). Приватный API ответит
   «Требуется авторизация»; для таких сценариев нужен штатный вход через приложение.
 
 ## Запрещено

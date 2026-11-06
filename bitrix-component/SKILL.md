@@ -8,8 +8,8 @@ description: 'Bitrix components, templates, assets and migrations in this projec
 ## Структура компонента
 
 ```
-public/local/components/rad/<name>/
-├── class.php            # Rad<Name>Component extends CBitrixComponent
+public/local/components/zavidovo/<name>/
+├── class.php            # Zavidovo<Name>Component extends CBitrixComponent
 ├── .description.php
 ├── style.css            # ассеты — в корне компонента
 ├── script.js
@@ -27,10 +27,10 @@ public/local/components/rad/<name>/
 
 ### Ассеты
 - Класть `style.css` и `script.js` **в корень компонента**, не в `templates/.default/`.
-  Причина: nginx закрывает пути с точкой в сегменте (`location ~* /\.` → 403), поэтому `/local/components/rad/x/templates/.default/style.css` не отдаётся.
+  Причина: nginx закрывает пути с точкой в сегменте (`location ~* /\.` → 403), поэтому `/local/components/zavidovo/x/templates/.default/style.css` не отдаётся.
 - Подключение: `$this->__component->getPath() . '/style.css'` через `Asset::getInstance()`.
 - **Папки `templates/` в модуле быть не должно.** Модуль — это код (`lib/`, `config/`); разметка, стили и картинки живут там, где их рендерят.
-- Общая разметка нескольких компонентов — отдельный маленький компонент (например `rad:settings.nav`), а не копия в каждом шаблоне и не include из модуля.
+- Общая разметка нескольких компонентов — отдельный маленький компонент (например `zavidovo:settings.nav`), а не копия в каждом шаблоне и не include из модуля.
 - Картинки и иконки — всегда `local/templates/<template>/static/img/general/`: класть туда новый файл можно, править чужие иконки — нет. В модуль картинки не класть, даже если её открывает письмо, а не страница: письмо ссылается на публичный URL, а не на файл рядом с кодом.
 - Стили, нужные двум и более компонентам (например деталка уведомления в колпачке и на странице), — в `static/css/backend.css` с комментарием-заголовком секции. Стили одного компонента — в его `style.css`.
 

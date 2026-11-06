@@ -68,9 +68,9 @@ const drawn = await page.evaluate(
     }
     await new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r)));
 
-    document.getElementById('__rad_overlay')?.remove();
+    document.getElementById('__shot_overlay')?.remove();
     const layer = document.createElement('div');
-    layer.id = '__rad_overlay';
+    layer.id = '__shot_overlay';
     layer.style.cssText =
       'position:fixed;inset:0;z-index:2147483647;pointer-events:none;font:700 20px/1 -apple-system,Arial,sans-serif';
     document.body.appendChild(layer);
@@ -269,12 +269,12 @@ const drawn = await page.evaluate(
 );
 
 if (drawn.errors?.length) {
-  await page.evaluate(() => document.getElementById('__rad_overlay')?.remove());
+  await page.evaluate(() => document.getElementById('__shot_overlay')?.remove());
   throw new Error('ПОМЕТКИ НЕ ПОСТАВЛЕНЫ, снимок не сделан:\n' + drawn.errors.join('\n'));
 }
 
 const shot = await page.screenshot({ path: SPEC.shot, fullPage: false });
-await page.evaluate(() => document.getElementById('__rad_overlay')?.remove());
+await page.evaluate(() => document.getElementById('__shot_overlay')?.remove());
 
 return {
   shot: SPEC.shot,

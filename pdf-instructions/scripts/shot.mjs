@@ -11,8 +11,8 @@
  * Запуск:
  *   node shot.mjs tasks.json --out ./img --window 1600x1250
  *
- * Доступы админа скрипт читает сам: сначала переменные окружения RAD_ADMIN_LOGIN /
- * RAD_ADMIN_EMAIL / RAD_ADMIN_PASSWORD / RAD_BASE_URL, затем файлы
+ * Доступы админа скрипт читает сам: сначала переменные окружения SITE_ADMIN_LOGIN /
+ * SITE_ADMIN_EMAIL / SITE_ADMIN_PASSWORD / SITE_BASE_URL, затем файлы
  * `.github/skills/.env.local`, `.github/.env.local`, `.env.local`, `.env` в текущем
  * каталоге (первое найденное значение выигрывает). Имена переменных и особенности
  * проекта — `.github/skills/project-features.md`. Переменные окружения имеют приоритет
@@ -95,7 +95,7 @@ const [winW, winH] = (flag('--window', '1600x1250') || '').split('x').map(Number
 mkdirSync(outDir, { recursive: true });
 
 const spec = JSON.parse(readFileSync(tasksPath, 'utf8'));
-const base = (spec.base || process.env.RAD_BASE_URL || 'http://localhost:8080').replace(/\/$/, '');
+const base = (spec.base || process.env.SITE_BASE_URL || 'http://localhost:8080').replace(/\/$/, '');
 
 const profile = resolve(outDir, '.chrome-profile');
 rmSync(profile, { recursive: true, force: true });
@@ -192,9 +192,9 @@ const DRAW = (payload) => `(async () => {
   }
   await new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r)));
 
-  document.getElementById('__rad_overlay')?.remove();
+  document.getElementById('__shot_overlay')?.remove();
   const layer = document.createElement('div');
-  layer.id = '__rad_overlay';
+  layer.id = '__shot_overlay';
   layer.style.cssText = 'position:fixed;inset:0;margin:0;border:0;padding:0;background:transparent;' +
     'overflow:visible;z-index:2147483647;pointer-events:none';
   // Top layer: an open <dialog> or popover paints above any z-index, so a plain fixed
@@ -203,7 +203,7 @@ const DRAW = (payload) => `(async () => {
   layer.setAttribute('popover', 'manual');
   document.body.appendChild(layer);
   const layerCss = document.createElement('style');
-  layerCss.textContent = '#__rad_overlay::backdrop{display:none!important}';
+  layerCss.textContent = '#__shot_overlay::backdrop{display:none!important}';
   document.head.appendChild(layerCss);
   try { layer.showPopover(); } catch (e) { /* browsers without Popover API: keep plain layer */ }
 
@@ -355,7 +355,7 @@ if ($USER->IsAuthorized()) {
 }
 
 // Bitrix Login() takes LOGIN, not email: resolve LOGIN by EMAIL first.
-function rad_resolve_login(string $value): string
+function shot_resolve_login(string $value): string
 {
     if (strpos($value, '@') === false) {
         return $value;
@@ -366,7 +366,7 @@ function rad_resolve_login(string $value): string
 
 $login = (string)($_POST['l'] ?? '');
 $pass = (string)($_POST['p'] ?? '');
-$ok = $USER->Login(rad_resolve_login($login), $pass, 'Y');
+$ok = $USER->Login(shot_resolve_login($login), $pass, 'Y');
 echo $ok ? 'OK ' . (int)$USER->GetID() : 'FAIL ' . strip_tags((string)$USER->LAST_ERROR);
 `;
 
@@ -517,14 +517,15 @@ async function main() {
     // Логин: только через админку. На публичной части вход с правами админа запрещён.
     // Доступы берутся из окружения (.github/skills/.env.local), см. bitrix-login.
     const login = spec.login || {};
-    const user = process.env.RAD_ADMIN_LOGIN || process.env.RAD_ADMIN_EMAIL || login.user;
-    const pass = process.env.RAD_ADMIN_PASSWORD || login.pass;
-    const needsLogin = Boolean(spec.login || process.env.RAD_ADMIN_LOGIN || process.env.RAD_ADMIN_EMAIL);
+    const adminUser = process.env.SITE_ADMIN_LOGIN || process.env.SITE_ADMIN_EMAIL;
+    const user = adminUser || login.user;
+    const pass = process.env.SITE_ADMIN_PASSWORD || login.pass;
+    const needsLogin = Boolean(spec.login || adminUser);
     if (user && pass) {
       await loginAdmin(cdp, { base, user, pass, login });
     } else if (needsLogin) {
       throw new Error(
-        'нет доступов для входа. Заполните .github/skills/.env.local (RAD_ADMIN_LOGIN или RAD_ADMIN_EMAIL + RAD_ADMIN_PASSWORD)\n' +
+        'нет доступов для входа. Заполните .github/skills/.env.local (SITE_ADMIN_LOGIN или SITE_ADMIN_EMAIL + SITE_ADMIN_PASSWORD)\n' +
           `  прочитанные env-файлы: ${envSources.length ? envSources.join(', ') : 'нет'}\n` +
           '  имена переменных: .github/skills/project-features.md; если доступов нет и там — спросите пользователя',
       );
@@ -543,12 +544,12 @@ async function main() {
 
       const drawn = await cdp.eval(DRAW({ marks: task.marks || [], scrollTo: task.scrollTo || null, arrows: task.arrows || [] }));
       if (drawn.errors.length) {
-        await cdp.eval(`document.getElementById('__rad_overlay')?.remove()`, false);
+        await cdp.eval(`document.getElementById('__shot_overlay')?.remove()`, false);
         throw new Error(`\n${task.name}: пометки не поставлены, снимок не сделан:\n  ` + drawn.errors.join('\n  '));
       }
 
       const shot = await cdp.send('Page.captureScreenshot', { format: 'png', fromSurface: true, captureBeyondViewport: false });
-      await cdp.eval(`document.getElementById('__rad_overlay')?.remove()`, false);
+      await cdp.eval(`document.getElementById('__shot_overlay')?.remove()`, false);
 
       const file = resolve(outDir, `${task.name}.png`);
       writeFileSync(file, Buffer.from(shot.data, 'base64'));
