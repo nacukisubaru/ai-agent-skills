@@ -1,6 +1,6 @@
 ---
 name: ui-testing-playwright
-description: 'Browser verification with playwright-mcp: authorized session via the bitrix-login skill, UI checks, screenshots and artifacts. Credentials are never hardcoded: they come from .github/skills/project-features.md and .env.local, otherwise ask the user. Use when changes touch templates, components, JavaScript, CSS, forms, modals, or when the user asks to check the interface in a browser.'
+description: 'Browser verification with playwright-mcp: authorized session via the bitrix-login skill, UI checks, screenshots and artifacts. Credentials are never hardcoded: they come from .github/skills-local/project-features.md and .env.local, otherwise ask the user. Use when changes touch templates, components, JavaScript, CSS, forms, modals, or when the user asks to check the interface in a browser.'
 ---
 
 # UI testing with Playwright
@@ -21,9 +21,9 @@ description: 'Browser verification with playwright-mcp: authorized session via t
 
 В скилле доступов нет — он общий для всех проектов:
 
-1. `.github/skills/project-features.md` — какие переменные нужны, адрес стенда,
+1. `.github/skills-local/project-features.md` — какие переменные нужны, адрес стенда,
    ожидаемый id пользователя.
-2. `.github/skills/.env.local` — значения этих переменных.
+2. `.github/skills-local/env.local` — значения этих переменных.
 3. Нужной переменной нет → **спросить у пользователя**, ответ дописать в `.env.local`.
 
 Способ входа зависит от платформы. Для Bitrix — скилл **`bitrix-login`**: одноразовый

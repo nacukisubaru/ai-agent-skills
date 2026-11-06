@@ -1,6 +1,6 @@
 ---
 name: bitrix-login
-description: 'Вход в Bitrix под администратором для проверок, скриншотов и инструкций: временный PHP-мост вместо формы входа, вход по LOGIN или EMAIL, доступы только из .github/skills/project-features.md и .env.local. Use when you need an authorized Bitrix session (playwright checks, PDF instructions, manual testing), when a page asks for admin login, or when credentials must be taken from the project files.'
+description: 'Вход в Bitrix под администратором для проверок, скриншотов и инструкций: временный PHP-мост вместо формы входа, вход по LOGIN или EMAIL, доступы только из .github/skills-local/project-features.md и .env.local. Use when you need an authorized Bitrix session (playwright checks, PDF instructions, manual testing), when a page asks for admin login, or when credentials must be taken from the project files.'
 ---
 
 # Вход в Bitrix
@@ -17,10 +17,10 @@ description: 'Вход в Bitrix под администратором для п
 
 Скилл общий для всех проектов, поэтому доступов в нём нет. Порядок всегда один:
 
-1. **`.github/skills/project-features.md`** — особенности проекта: адрес стенда,
+1. **`.github/skills-local/project-features.md`** — особенности проекта: адрес стенда,
    **имена** переменных с доступами, ожидаемый id пользователя. Файл локальный,
    в git не попадает.
-2. **`.github/skills/.env.local`** — значения этих переменных. Тоже локальный.
+2. **`.github/skills-local/env.local`** — значения этих переменных. Тоже локальный.
 3. **Нет нужной переменной — спросить у пользователя.** Не подбирать пароль,
    не пробовать чужие учётки, не заводить нового пользователя. Ответ дописать
    в `.env.local`, а не в файл скилла.

@@ -17,19 +17,43 @@
 | `git-commits/` | разбиение на коммиты, сообщения, пуш |
 | `manual-testing/` | ручной сценарий проверки бэкенда |
 | `pdf-instructions/` | PDF-инструкции со скриншотами, эталон в `example/` |
+| `skill-maintenance/` | как править скиллы: коммит → подтверждение → пуш → обновление сабмодулей |
 | `ui-testing-playwright/` | проверка интерфейса в браузере |
 | `copilot-instructions.md` | always-on правила проекта RAD Aggregator — источник истины |
 | `templates/` | `env.example` и `project-features.example.md` для нового проекта |
+| `tools/` | `sync-submodules.sh` — обновить сабмодуль скиллов во всех проектах |
 
-## Как подключить в проект
+## Как подключить в проект (сабмодуль)
+
+Скиллы подключаются **сабмодулем**, чтобы обновлять их одной командой во всех
+проектах:
 
 ```bash
-cd <project>/.github
-git clone git@github.com:nacukisubaru/ai-agent-skills.git skills
+cd <project>
+git submodule add git@github.com:nacukisubaru/ai-agent-skills.git .github/skills
+git commit -m "Add agent skills as a submodule"
 ```
 
+Если каталог `.github/` в проекте целиком в `.gitignore`, разрешить только нужные пути:
+
+```gitignore
+/.github/*
+!/.github/skills
+!/.github/copilot-instructions.md
+```
+
+Обновление после правок в скиллах:
+
+```bash
+git submodule update --remote --merge .github/skills   # в одном проекте
+/path/to/skills/tools/sync-submodules.sh               # во всех сразу
+```
+
+Указатель сабмодуля меняется в индексе проекта — это обычное изменение, его
+коммитят в ветку проекта.
+
 Скиллы читаются из `.github/skills/<name>/SKILL.md`. Папки без `SKILL.md`
-(`templates`, `example`) скиллами не считаются.
+(`templates`, `tools`, `example`) скиллами не считаются.
 
 Затем один раз создать в проекте `.github/copilot-instructions.md` — указатель
 на `skills/copilot-instructions.md` (шаблон в разделе ниже).
@@ -40,8 +64,8 @@ git clone git@github.com:nacukisubaru/ai-agent-skills.git skills
 проектов, доступы — свойство проекта. Два локальных файла, оба в `.gitignore`:
 
 ```
-.github/skills/project-features.md   # имена переменных + особенности стенда
-.github/skills/.env.local            # значения этих переменных
+.github/skills-local/project-features.md   # имена переменных + особенности стенда
+.github/skills-local/env.local            # значения этих переменных
 ```
 
 Порядок для агента:
@@ -58,7 +82,7 @@ git clone git@github.com:nacukisubaru/ai-agent-skills.git skills
 платформы добавляется свой скилл, а `project-features.md` указывает, какой именно.
 
 Скрипты скиллов читают `.env.local` сами (`pdf-instructions/scripts/shot.mjs`:
-окружение → `.github/skills/.env.local` → `.github/.env.local` → `.env.local` → `.env`).
+окружение → `.github/skills-local/env.local` → `.github/.env.local` → `.env.local` → `.env`).
 
 Копируйте при подключении к новому проекту:
 

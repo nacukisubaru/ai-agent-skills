@@ -13,9 +13,9 @@
  *
  * Доступы админа скрипт читает сам: сначала переменные окружения SITE_ADMIN_LOGIN /
  * SITE_ADMIN_EMAIL / SITE_ADMIN_PASSWORD / SITE_BASE_URL, затем файлы
- * `.github/skills/.env.local`, `.github/.env.local`, `.env.local`, `.env` в текущем
+ * `.github/skills-local/env.local`, `.github/.env.local`, `.env.local`, `.env` в текущем
  * каталоге (первое найденное значение выигрывает). Имена переменных и особенности
- * проекта — `.github/skills/project-features.md`. Переменные окружения имеют приоритет
+ * проекта — `.github/skills-local/project-features.md`. Переменные окружения имеют приоритет
  * над файлами, поэтому разовый запуск можно переопределить в строке команды.
  * Логин принимается и как LOGIN, и как email: мост сам подставит LOGIN.
  *
@@ -66,9 +66,15 @@ const flag = (name, fallback = null) => {
   return i === -1 ? fallback : argv[i + 1];
 };
 
-// Local credentials live outside the repo (see .github/skills/project-features.md).
+// Local credentials live outside the repo (see .github/skills-local/project-features.md).
 // Real environment variables still win over the files.
-const ENV_FILES = ['.github/skills/.env.local', '.github/.env.local', '.env.local', '.env'];
+const ENV_FILES = [
+  '.github/skills-local/env.local',
+  '.github/skills-local/.env.local',
+  '.github/.env.local',
+  '.env.local',
+  '.env',
+];
 
 function loadEnvFiles(root) {
   const loaded = [];
@@ -515,7 +521,7 @@ async function main() {
 
   try {
     // Логин: только через админку. На публичной части вход с правами админа запрещён.
-    // Доступы берутся из окружения (.github/skills/.env.local), см. bitrix-login.
+    // Доступы берутся из окружения (.github/skills-local/env.local), см. bitrix-login.
     const login = spec.login || {};
     const adminUser = process.env.SITE_ADMIN_LOGIN || process.env.SITE_ADMIN_EMAIL;
     const user = adminUser || login.user;
@@ -525,9 +531,9 @@ async function main() {
       await loginAdmin(cdp, { base, user, pass, login });
     } else if (needsLogin) {
       throw new Error(
-        'нет доступов для входа. Заполните .github/skills/.env.local (SITE_ADMIN_LOGIN или SITE_ADMIN_EMAIL + SITE_ADMIN_PASSWORD)\n' +
+        'нет доступов для входа. Заполните .github/skills-local/env.local (SITE_ADMIN_LOGIN или SITE_ADMIN_EMAIL + SITE_ADMIN_PASSWORD)\n' +
           `  прочитанные env-файлы: ${envSources.length ? envSources.join(', ') : 'нет'}\n` +
-          '  имена переменных: .github/skills/project-features.md; если доступов нет и там — спросите пользователя',
+          '  имена переменных: .github/skills-local/project-features.md; если доступов нет и там — спросите пользователя',
       );
     }
 
