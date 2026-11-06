@@ -17,9 +17,8 @@
 | `manual-testing/` | ручной сценарий проверки бэкенда |
 | `pdf-instructions/` | PDF-инструкции со скриншотами, эталон в `example/` |
 | `ui-testing-playwright/` | проверка интерфейса в браузере |
-| `copilot-instructions.md` | копия `.github/copilot-instructions.md` проекта RAD Aggregator |
+| `copilot-instructions.md` | always-on правила проекта RAD Aggregator — источник истины |
 | `templates/` | `env.example` и `project-features.example.md` для нового проекта |
-| `tools/` | служебные скрипты репозитория |
 
 ## Как подключить в проект
 
@@ -29,7 +28,10 @@ git clone git@github.com:nacukisubaru/ai-agent-skills.git skills
 ```
 
 Скиллы читаются из `.github/skills/<name>/SKILL.md`. Папки без `SKILL.md`
-(`templates`, `tools`, `example`) скиллами не считаются.
+(`templates`, `example`) скиллами не считаются.
+
+Затем один раз создать в проекте `.github/copilot-instructions.md` — указатель
+на `skills/copilot-instructions.md` (шаблон в разделе ниже).
 
 ## Доступы: где что лежит
 
@@ -63,15 +65,20 @@ cp templates/project-features.example.md project-features.md
 
 ## copilot-instructions.md
 
-Копия живёт здесь, но **рабочий файл обязан лежать в `.github/copilot-instructions.md`
-в корне проекта** — из другой папки VS Code его не читает. Правки вносятся в проект,
-затем синхронизируются сюда:
+Полные always-on правила лежат здесь: `skills/copilot-instructions.md`.
+В проекте корневой `.github/copilot-instructions.md` — только указатель на этот
+файл, собственных правил в нём нет:
 
-```bash
-tools/sync-copilot-instructions.sh <project-root>
+```markdown
+Все инструкции проекта лежат в одном файле:
+**`.github/skills/copilot-instructions.md`**
+Прочитать этот файл целиком до начала любой задачи и следовать ему.
 ```
 
-Без аргумента скрипт берёт `.github/copilot-instructions.md` из текущего каталога.
+Так правила правятся в одном месте и не расходятся между копиями. VS Code
+автоматически читает только корневой файл, поэтому в нём обязательна фраза
+«прочитать указанный файл целиком» — иначе агент его не откроет. В новом проекте
+этот указатель создаётся один раз и больше не меняется.
 
 ## Проверки перед коммитом
 
