@@ -1,0 +1,18 @@
+# Локальные данные: никогда не коммитить
+.env
+.env.*
+!.env.example
+PROJECT-ACCESS.md
+**/PROJECT-ACCESS.md
+*.secrets.*
+*.local.md
+
+# Артефакты съёмки и сборки
+.chrome-profile/
+marks.json
+img/src/.chrome-profile/
+*.log
+
+# Системный мусор
+.DS_Store
+Thumbs.db
