@@ -18,8 +18,18 @@ https://www.figma.com/design/{FILE_KEY}/...?node-id={A}-{B}&...
 
 ## Токен
 
-`FIGMA_TOKEN_FROM_ENV` в заголовке `X-Figma-Token`.
-При ошибке авторизации — сообщить и запросить новый токен, не гадать.
+Токен в скилле не хранится. Он лежит в `.github/skills/.env.local` под именем
+`FIGMA_TOKEN` (файл в git не попадает, имена переменных — в `project-features.md`).
+В запросах передаётся заголовком `X-Figma-Token`.
+
+```bash
+set -a; . .github/skills/.env.local; set +a
+curl -s -H "X-Figma-Token: $FIGMA_TOKEN" ...
+```
+
+Нет `FIGMA_TOKEN` в `.env.local` или API ответил `403` — **спросить у пользователя**
+новый токен и дописать его в `.env.local`. Не подбирать и не вставлять токен
+в скилл, скрипт или команду в отчёте.
 
 ## Запросы
 
