@@ -21,7 +21,7 @@
 | `ui-testing-playwright/` | проверка интерфейса в браузере |
 | `copilot-instructions.md` | always-on правила проекта RAD Aggregator — источник истины |
 | `templates/` | `env.example` и `project-features.example.md` для нового проекта |
-| `tools/` | `sync-submodules.sh` — обновить сабмодуль скиллов во всех проектах |
+| `tools/` | `sync-skills.sh` — обновить скиллы во всех проектах (сабмодуль или клон) |
 
 ## Как подключить в проект (сабмодуль)
 
@@ -46,11 +46,16 @@ git commit -m "Add agent skills as a submodule"
 
 ```bash
 git submodule update --remote --merge .github/skills   # в одном проекте
-/path/to/skills/tools/sync-submodules.sh               # во всех сразу
+/Users/aleksandrkrestinskij/projects/skills/tools/sync-skills.sh   # во всех сразу
 ```
 
 Указатель сабмодуля меняется в индексе проекта — это обычное изменение, его
 коммитят в ветку проекта.
+
+Если проект не хочет держать сабмодуль, работает и обычный клон
+(`git clone ... .github/skills` с `.github/` в `.gitignore`): `sync-skills.sh`
+находит такие проекты по `origin` внутри `.github/skills` и делает
+`fetch` + `merge --ff-only origin/main`.
 
 Скиллы читаются из `.github/skills/<name>/SKILL.md`. Папки без `SKILL.md`
 (`templates`, `tools`, `example`) скиллами не считаются.

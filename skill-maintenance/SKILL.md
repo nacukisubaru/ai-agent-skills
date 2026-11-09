@@ -50,8 +50,8 @@ git pull --ff-only         # перед правкой, если работал�
 7. **Синхронизация проектов.** Обновить сабмодуль во всех проектах, где он подключён:
 
    ```bash
-   skills/tools/sync-submodules.sh            # по умолчанию /Users/aleksandrkrestinskij/projects
-   skills/tools/sync-submodules.sh /path/to/projects
+   /Users/aleksandrkrestinskij/projects/skills/tools/sync-skills.sh   # все проекты
+   /Users/aleksandrkrestinskij/projects/skills/tools/sync-skills.sh /path/to/projects
    ```
 
    Скрипт находит проекты с сабмодулем `.github/skills`, указывающим на этот
@@ -63,13 +63,15 @@ git pull --ff-only         # перед правкой, если работал�
 
 ## Скрипт синхронизации
 
-`tools/sync-submodules.sh`:
+`tools/sync-skills.sh`:
 
 - сканирует каталоги проектов (по умолчанию `/Users/aleksandrkrestinskij/projects`),
   сам репозиторий скиллов пропускает;
-- отбирает только те, где в `.gitmodules` есть путь `.github/skills` и URL этого
-  репозитория;
-- выполняет `git -C <project> submodule update --remote --merge .github/skills`;
+- находит проекты двумя способами: сабмодуль (`.gitmodules` с путём `.github/skills`
+  и URL этого репозитория) и обычный клон (`.github/skills/.git` с этим `origin`);
+- для сабмодуля выполняет `git -C <project> submodule update --remote --merge .github/skills`,
+  для клона — `git -C <project>/.github/skills fetch` + `merge --ff-only origin/main`
+  (клон может быть с detached HEAD, `pull` там ругается);
 - печатает `проект: старый SHA → новый SHA` и признак «указатель изменён»;
 - ничего не коммитит и не пушит. Ошибка в одном проекте не останавливает остальные,
   в конце печатается сводка.
