@@ -21,7 +21,7 @@
 | `ui-testing-playwright/` | проверка интерфейса в браузере |
 | `copilot-instructions.md` | always-on правила проекта RAD Aggregator — источник истины |
 | `templates/` | `env.example` и `project-features.example.md` для нового проекта |
-| `tools/` | `sync-skills.sh` — обновить скиллы во всех проектах (сабмодуль или клон) |
+| `tools/` | `skills.sh` — `init` новый проект, `update` все проекты, `status` версии |
 
 ## Как подключить в проект (сабмодуль)
 
@@ -46,16 +46,29 @@ git commit -m "Add agent skills as a submodule"
 
 ```bash
 git submodule update --remote --merge .github/skills   # в одном проекте
-/Users/aleksandrkrestinskij/projects/skills/tools/sync-skills.sh   # во всех сразу
+/Users/aleksandrkrestinskij/projects/skills/tools/skills.sh update   # во всех сразу
 ```
 
 Указатель сабмодуля меняется в индексе проекта — это обычное изменение, его
 коммитят в ветку проекта.
 
 Если проект не хочет держать сабмодуль, работает и обычный клон
-(`git clone ... .github/skills` с `.github/` в `.gitignore`): `sync-skills.sh`
+(`git clone ... .github/skills` с `.github/` в `.gitignore`): `skills.sh update`
 находит такие проекты по `origin` внутри `.github/skills` и делает
-`fetch` + `merge --ff-only origin/main`.
+`fetch` + `merge --ff-only`.
+
+### Одна команда на всё
+
+```bash
+~/projects/skills/tools/skills.sh update     # обновить во всех проектах ~/projects
+~/projects/skills/tools/skills.sh status     # показать версию в каждом
+~/projects/skills/tools/skills.sh init ~/projects/new-project   # подключить новый
+```
+
+`update` не требует `.gitmodules` в текущей ветке проекта: он работает с
+`.github/skills` как с обычным репозиторием, поэтому одинаково обновляет и
+сабмодуль, и клон. `.github/skills` с незакоммиченными правками пропускается
+с предупреждением.
 
 Скиллы читаются из `.github/skills/<name>/SKILL.md`. Папки без `SKILL.md`
 (`templates`, `tools`, `example`) скиллами не считаются.

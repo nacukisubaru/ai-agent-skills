@@ -50,8 +50,8 @@ git pull --ff-only         # перед правкой, если работал�
 7. **Синхронизация проектов.** Обновить сабмодуль во всех проектах, где он подключён:
 
    ```bash
-   /Users/aleksandrkrestinskij/projects/skills/tools/sync-skills.sh   # все проекты
-   /Users/aleksandrkrestinskij/projects/skills/tools/sync-skills.sh /path/to/projects
+   /Users/aleksandrkrestinskij/projects/skills/tools/skills.sh update            # все проекты
+   /Users/aleksandrkrestinskij/projects/skills/tools/skills.sh update /path/to/projects
    ```
 
    Скрипт находит проекты с сабмодулем `.github/skills`, указывающим на этот
@@ -63,15 +63,18 @@ git pull --ff-only         # перед правкой, если работал�
 
 ## Скрипт синхронизации
 
-`tools/sync-skills.sh`:
+`tools/skills.sh`:
 
 - сканирует каталоги проектов (по умолчанию `/Users/aleksandrkrestinskij/projects`),
   сам репозиторий скиллов пропускает;
-- находит проекты двумя способами: сабмодуль (`.gitmodules` с путём `.github/skills`
-  и URL этого репозитория) и обычный клон (`.github/skills/.git` с этим `origin`);
-- для сабмодуля выполняет `git -C <project> submodule update --remote --merge .github/skills`,
-  для клона — `git -C <project>/.github/skills fetch` + `merge --ff-only origin/main`
-  (клон может быть с detached HEAD, `pull` там ругается);
+- ищет каталоги, где `.github/skills` — git-репозиторий с `origin` этого репозитория;
+  `.gitmodules` не нужен, поэтому находятся и сабмодули, и обычные клоны;
+- обновляет через `git -C <project>/.github/skills fetch` +
+  `merge --ff-only origin/<ветка>`; ветка определяется по HEAD, при detached — `main`
+  (обычный `pull` в detached состоянии ругается);
+- подкоманда `init <path>`: `git init`, `.github/` в `.gitignore`, клон скиллов,
+  файл-указатель; повторный запуск безопасен;
+- подкоманда `status` печатает версию скиллов в каждом проекте;
 - печатает `проект: старый SHA → новый SHA` и признак «указатель изменён»;
 - ничего не коммитит и не пушит. Ошибка в одном проекте не останавливает остальные,
   в конце печатается сводка.
