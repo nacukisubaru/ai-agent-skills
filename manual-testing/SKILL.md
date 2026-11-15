@@ -16,15 +16,15 @@ Unit-тестов недостаточно, когда логика зависи
 ## Доступы
 
 Для сценариев, которым нужен пользователь (личный кабинет, права, уведомления),
-имена переменных берутся из `.github/project-features.md`, значения — из
-`.github/.env.local`. Нужного пользователя там нет — **спросить у пользователя**,
+имена переменных берутся из `.opencode/project-features.md`, значения — из
+`.opencode/.env.local`. Нужного пользователя там нет — **спросить у пользователя**,
 не подбирать и не заводить нового. В сценарий и вывод прогона пароль не печатать.
 Вход в Bitrix — скилл `bitrix-login`.
 
 ## Где лежит
 
 ```
-project/.github/tests/<slug>/
+project/.opencode/tests/<slug>/
 ├── scenario.md   # сценарий
 └── run.php       # прогон (или несколько скриптов)
 ```
@@ -32,7 +32,7 @@ project/.github/tests/<slug>/
 Одна задача — одна папка. Скрипт запускается из `project/`:
 
 ```bash
-docker compose run --rm --no-deps php-cli php .github/tests/<slug>/run.php
+docker compose run --rm --no-deps php-cli php .opencode/tests/<slug>/run.php
 ```
 
 ## 1. Сначала сценарий, потом код прогона
@@ -77,7 +77,7 @@ check('T01 событие создано', is_int($eventId) && $eventId > 0);
 
 - Запустить скрипт, добиться `0 FAIL`.
 - Краткий результат дописать в `scenario.md` (блок «Результат прогона»).
-- Отчёт по фазе — `.github/tasks/<slug>/test-N.md`.
+- Отчёт по фазе — `.opencode/tasks/<slug>/test-N.md`.
 
 ## 4. Запрещено
 

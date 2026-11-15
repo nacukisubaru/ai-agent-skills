@@ -1,7 +1,7 @@
 # ai-agent-skills
 
-Личные скиллы для GitHub Copilot в VS Code: процедуры, которые агент загружает
-по триггеру. Один репозиторий — используется в разных проектах.
+Личные скиллы для OpenCode: процедуры, которые агент загружает по триггеру.
+Один репозиторий — используется в разных проектах.
 
 ## Состав
 
@@ -18,9 +18,9 @@
 | `manual-testing/` | ручной сценарий проверки бэкенда |
 | `merge-request/` | пуш ветки и MR в `dev` с саммари изменений |
 | `pdf-instructions/` | PDF-инструкции со скриншотами, эталон в `example/` |
-| `skill-maintenance/` | как править скиллы: коммит → подтверждение → пуш → обновление сабмодулей |
+| `skill-maintenance/` | как править скиллы: коммит → подтверждение → пуш → обновление `.opencode/skills` |
 | `ui-testing-playwright/` | проверка интерфейса в браузере |
-| `copilot-instructions.md` | always-on правила проекта RAD Aggregator — источник истины |
+| `AGENTS.md` | always-on правила проекта RAD Aggregator — источник истины |
 | `templates/` | `env.example` и `project-features.example.md` для нового проекта |
 | `tools/` | `skills.sh` — `init` новый проект, `update` все проекты, `status` версии |
 
@@ -31,22 +31,22 @@
 
 ```bash
 cd <project>
-git submodule add git@github.com:nacukisubaru/ai-agent-skills.git .github/skills
+git submodule add git@github.com:nacukisubaru/ai-agent-skills.git .opencode/skills
 git commit -m "Add agent skills as a submodule"
 ```
 
-Если каталог `.github/` в проекте целиком в `.gitignore`, разрешить только нужные пути:
+Если `.opencode/` в проекте игнорируется целиком, замените правило на такое,
+чтобы версионировать только скиллы:
 
 ```gitignore
-/.github/*
-!/.github/skills
-!/.github/copilot-instructions.md
+/.opencode/*
+!/.opencode/skills
 ```
 
 Обновление после правок в скиллах:
 
 ```bash
-git submodule update --remote --merge .github/skills   # в одном проекте
+git submodule update --remote --merge .opencode/skills   # в одном проекте
 /Users/aleksandrkrestinskij/projects/skills/tools/skills.sh update   # во всех сразу
 ```
 
@@ -54,8 +54,8 @@ git submodule update --remote --merge .github/skills   # в одном прое�
 коммитят в ветку проекта.
 
 Если проект не хочет держать сабмодуль, работает и обычный клон
-(`git clone ... .github/skills` с `.github/` в `.gitignore`): `skills.sh update`
-находит такие проекты по `origin` внутри `.github/skills` и делает
+(`git clone ... .opencode/skills` с `.opencode/` в `.gitignore`): `skills.sh update`
+находит такие проекты по `origin` внутри `.opencode/skills` и делает
 `fetch` + `merge --ff-only`.
 
 ### Одна команда на всё
@@ -67,15 +67,16 @@ git submodule update --remote --merge .github/skills   # в одном прое�
 ```
 
 `update` не требует `.gitmodules` в текущей ветке проекта: он работает с
-`.github/skills` как с обычным репозиторием, поэтому одинаково обновляет и
-сабмодуль, и клон. `.github/skills` с незакоммиченными правками пропускается
-с предупреждением.
+`.opencode/skills` как с обычным репозиторием, поэтому одинаково обновляет и
+сабмодуль, и клон. `.opencode/skills` с незакоммиченными правками пропускается
+с предупреждением. Проекты со старой раскладкой скиллов нужно один раз перевести
+на `.opencode/skills` и корневой `AGENTS.md` вручную — `update` ищет только новую.
 
-Скиллы читаются из `.github/skills/<name>/SKILL.md`. Папки без `SKILL.md`
+Скиллы читаются из `.opencode/skills/<name>/SKILL.md`. Папки без `SKILL.md`
 (`templates`, `tools`, `example`) скиллами не считаются.
 
-Затем один раз создать в проекте `.github/copilot-instructions.md` — указатель
-на `skills/copilot-instructions.md` (шаблон в разделе ниже).
+Затем один раз создать в проекте `AGENTS.md` — указатель на
+`.opencode/skills/AGENTS.md` (шаблон в разделе ниже).
 
 ## Доступы: где что лежит
 
@@ -83,12 +84,12 @@ git submodule update --remote --merge .github/skills   # в одном прое�
 проектов, доступы — свойство проекта. Два локальных файла, оба в `.gitignore`:
 
 ```
-.github/project-features.md   # имена переменных + особенности стенда
-.github/.env.local            # значения этих переменных
+.opencode/project-features.md   # имена переменных + особенности стенда
+.opencode/.env.local            # значения этих переменных
 ```
 
-Оба пути уже покрыты `.github/*` в `.gitignore` проекта — отдельная папка для них
-не нужна. Держать их **внутри** `.github/skills` нельзя: это сабмодуль, файл в нём
+Оба пути уже покрыты `.opencode/*` в `.gitignore` проекта — отдельная папка для них
+не нужна. Держать их **внутри** `.opencode/skills` нельзя: это сабмодуль, файл в нём
 попал бы в общий репозиторий скиллов.
 
 Порядок для агента:
@@ -98,38 +99,39 @@ git submodule update --remote --merge .github/skills   # в одном прое�
 3. Нужной переменной нет → **спросить у пользователя**. Не подбирать, не заводить
    пользователя, не вставлять доступы в код, скриншоты и отчёты.
 
-Токены внешних API — там же: `FIGMA_TOKEN` в `.env.local`, в скилле `figma-layout`
-только имя переменной.
+Токены внешних API — там же: `FIGMA_TOKEN` в `.opencode/.env.local`, в скилле
+`figma-layout` только имя переменной.
 
 Вход на платформу — отдельный скилл: для Bitrix это `bitrix-login`. Для другой
 платформы добавляется свой скилл, а `project-features.md` указывает, какой именно.
 
 Скрипты скиллов читают `.env.local` сами (`pdf-instructions/scripts/shot.mjs`:
-окружение → `.github/.env.local` → `.env.local` → `.env`).
+окружение → `.opencode/.env.local` → `.env.local` → `.env`).
 
 Копируйте при подключении к новому проекту:
 
 ```bash
-cp .github/skills/templates/env.example .github/.env.local
-cp .github/skills/templates/project-features.example.md .github/project-features.md
+cp .opencode/skills/templates/env.example .opencode/.env.local
+cp .opencode/skills/templates/project-features.example.md .opencode/project-features.md
 ```
 
-## copilot-instructions.md
+## AGENTS.md
 
-Полные always-on правила лежат здесь: `skills/copilot-instructions.md`.
-В проекте корневой `.github/copilot-instructions.md` — только указатель на этот
-файл, собственных правил в нём нет:
+Полные always-on правила лежат в корне этого репозитория: `AGENTS.md`.
+В проекте корневой `AGENTS.md` — только указатель на
+`.opencode/skills/AGENTS.md`, собственных правил в нём нет:
 
 ```markdown
 Все инструкции проекта лежат в одном файле:
-**`.github/skills/copilot-instructions.md`**
+**`.opencode/skills/AGENTS.md`**
 Прочитать этот файл целиком до начала любой задачи и следовать ему.
 ```
 
-Так правила правятся в одном месте и не расходятся между копиями. VS Code
-автоматически читает только корневой файл, поэтому в нём обязательна фраза
-«прочитать указанный файл целиком» — иначе агент его не откроет. В новом проекте
-этот указатель создаётся один раз и больше не меняется.
+Так правила правятся в одном месте и не расходятся между копиями. OpenCode
+автоматически читает корневой `AGENTS.md`, но не файл в `.opencode/skills`,
+поэтому в указателе обязательна фраза «прочитать указанный файл целиком» — иначе
+агент его не откроет. В новом проекте этот указатель создаётся один раз и больше
+не меняется.
 
 ## Проверки перед коммитом
 

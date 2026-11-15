@@ -6,7 +6,7 @@
 #   tools/skills.sh init <path>       подключить новый проект
 #
 # root по умолчанию — ~/projects. Для поиска проектов не нужен .gitmodules:
-# берётся любой каталог, где .github/skills — git-репозиторий с origin этого
+# берётся любой каталог, где .opencode/skills — git-репозиторий с origin этого
 # репозитория скиллов. Поэтому одинаково работают и сабмодуль, и обычный клон.
 set -uo pipefail
 
@@ -17,9 +17,9 @@ DEFAULT_ROOT="$HOME/projects"
 info() { printf '%s\n' "$*"; }
 err()  { printf '%s\n' "$*" >&2; }
 
-# Проект ли это со скиллами: <dir>/.github/skills — git с нужным origin.
+# Проект ли это со скиллами: <dir>/.opencode/skills — git с нужным origin.
 is_skills_project() {
-    local dir="$1/.github/skills"
+    local dir="$1/.opencode/skills"
     [[ -d "$dir/.git" || -f "$dir/.git" ]] || return 1
     git -C "$dir" remote get-url origin 2>/dev/null | grep -q "$URL_PATTERN" || return 1
     return 0
@@ -27,18 +27,18 @@ is_skills_project() {
 
 # Версия скиллов в проекте.
 skills_sha() {
-    git -C "$1/.github/skills" rev-parse --short HEAD 2>/dev/null || echo '-'
+    git -C "$1/.opencode/skills" rev-parse --short HEAD 2>/dev/null || echo '-'
 }
 
 # Обновить одну папку. Возвращает 0, если всё хорошо.
 update_one() {
     local project="$1"
-    local dir="$project/.github/skills"
+    local dir="$project/.opencode/skills"
     local before after
     before="$(skills_sha "$project")"
 
     if [[ -n "$(git -C "$dir" status --porcelain 2>/dev/null)" ]]; then
-        err "$(basename "$project"): в .github/skills есть незакоммиченные правки — пропущен"
+        err "$(basename "$project"): в .opencode/skills есть незакоммиченные правки — пропущен"
         return 1
     fi
 
@@ -82,7 +82,7 @@ cmd_status() {
     while IFS= read -r project; do
         found=$((found + 1))
         local branch
-        branch="$(git -C "$project/.github/skills" symbolic-ref -q --short HEAD || echo detached)"
+        branch="$(git -C "$project/.opencode/skills" symbolic-ref -q --short HEAD || echo detached)"
         printf '%-28s %s  (%s)\n' "$(basename "$project")" "$(skills_sha "$project")" "$branch"
     done < <(find_projects "$root")
     [[ $found -eq 0 ]] && info "проектов со скиллами не найдено в $root"
@@ -114,21 +114,21 @@ cmd_init() {
         git -C "$path" init -q -b main && info "git init: $path"
     fi
 
-    # 2. .gitignore: .github целиком локальный
+    # 2. .gitignore: .opencode целиком локальный
     local gi="$path/.gitignore"
-    if [[ ! -f "$gi" ]] || ! grep -q '^\.github/$' "$gi"; then
+    if [[ ! -f "$gi" ]] || ! grep -qE '^(/)?\.opencode/?$|^(/)?\.opencode/\*$' "$gi"; then
         {
             [[ -s "$gi" ]] && printf '\n'
-            printf '# Локальные данные агента: .github не версионируется.\n'
-            printf '# Скиллы: https://github.com/nacukisubaru/ai-agent-skills (клон в .github/skills).\n'
-            printf '.github/\n'
+            printf '# Локальные данные агента: .opencode не версионируется.\n'
+            printf '# Скиллы: https://github.com/nacukisubaru/ai-agent-skills (клон в .opencode/skills).\n'
+            printf '.opencode/\n'
         } >> "$gi"
-        info ".gitignore: добавлено .github/"
+        info ".gitignore: добавлено .opencode/"
     fi
 
-    # 3. скиллы в .github/skills
-    local dir="$path/.github/skills"
-    mkdir -p "$path/.github"
+    # 3. скиллы в .opencode/skills
+    local dir="$path/.opencode/skills"
+    mkdir -p "$path/.opencode"
     if [[ -d "$dir/.git" || -f "$dir/.git" ]]; then
         update_one "$path" || true
     else
@@ -140,15 +140,15 @@ cmd_init() {
         fi
     fi
 
-    # 4. указатель для VS Code
-    local ptr="$path/.github/copilot-instructions.md"
+    # 4. указатель для OpenCode
+    local ptr="$path/AGENTS.md"
     if [[ ! -f "$ptr" ]]; then
         cat > "$ptr" <<'EOF'
 # Правила работы
 
 Все инструкции проекта лежат в одном файле:
 
-**`.github/skills/copilot-instructions.md`**
+**`.opencode/skills/AGENTS.md`**
 
 Прочитать этот файл целиком **до начала любой задачи** и следовать ему как
 always-on правилам: карта скиллов, доступы, обязательный цикл, запреты.
@@ -156,14 +156,14 @@ always-on правилам: карта скиллов, доступы, обяз�
 Если файла нет (не склонирован репозиторий со скиллами) — сообщить об этом
 пользователю и работать по общим правилам, а не выдумывать содержимое.
 EOF
-        info "указатель: .github/copilot-instructions.md"
+        info "указатель: AGENTS.md"
     fi
 
-    # 5. локальные данные проекта (в git не идут, .github/ уже игнорируется)
+    # 5. локальные данные проекта (в git не идут, .opencode/ уже игнорируется)
     info ""
     info "готово. Дальше:"
-    info "  доступы:   .github/.env.local (см. .github/skills/templates/env.example)"
-    info "  заметки:   .github/project-features.md (см. templates/project-features.example.md)"
+    info "  доступы:   .opencode/.env.local (см. .opencode/skills/templates/env.example)"
+    info "  заметки:   .opencode/project-features.md (см. .opencode/skills/templates/project-features.example.md)"
     return 0
 }
 

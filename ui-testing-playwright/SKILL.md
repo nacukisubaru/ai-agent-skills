@@ -1,6 +1,6 @@
 ---
 name: ui-testing-playwright
-description: 'Browser verification with playwright-mcp: authorized session via the bitrix-login skill, UI checks, screenshots and artifacts. Credentials are never hardcoded: they come from .github/project-features.md and .env.local, otherwise ask the user. Use when changes touch templates, components, JavaScript, CSS, forms, modals, or when the user asks to check the interface in a browser.'
+description: 'Browser verification with playwright-mcp: authorized session via the bitrix-login skill, UI checks, screenshots and artifacts. Credentials are never hardcoded: they come from .opencode/project-features.md and .env.local, otherwise ask the user. Use when changes touch templates, components, JavaScript, CSS, forms, modals, or when the user asks to check the interface in a browser.'
 ---
 
 # UI testing with Playwright
@@ -13,17 +13,17 @@ description: 'Browser verification with playwright-mcp: authorized session via t
 
 ## Инструменты
 
-- Только `playwright-mcp`. Встроенный браузер VS Code не использовать.
-- Артефакты и логи — строго в `<project_root>/.github/playwright-mcp`.
+- Только `playwright-mcp`. Другие браузерные инструменты не использовать.
+- Артефакты и логи — строго в `<project_root>/.opencode/playwright-mcp`.
 - Папку `.playwright-mcp` в корне не создавать.
 
 ## Доступы и вход
 
 В скилле доступов нет — он общий для всех проектов:
 
-1. `.github/project-features.md` — какие переменные нужны, адрес стенда,
+1. `.opencode/project-features.md` — какие переменные нужны, адрес стенда,
    ожидаемый id пользователя.
-2. `.github/.env.local` — значения этих переменных.
+2. `.opencode/.env.local` — значения этих переменных.
 3. Нужной переменной нет → **спросить у пользователя**, ответ дописать в `.env.local`.
 
 Способ входа зависит от платформы. Для Bitrix — скилл **`bitrix-login`**: одноразовый
@@ -43,7 +43,7 @@ PHP-мост вместо формы входа (капча), вход по LOGI
 
 ## Артефакты
 
-- Скриншоты ключевых состояний — в `.github/playwright-mcp`.
+- Скриншоты ключевых состояний — в `.opencode/playwright-mcp`.
 - В отчёт `test-N.md` — что проверено, что найдено, что исправлено.
 
 ## Запрещено

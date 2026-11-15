@@ -43,7 +43,7 @@ git log --oneline origin/<target>..HEAD
 
 Читать **в таком порядке**, ничего не додумывая:
 
-1. `.github/tasks/<slug>/` — `review-*.md`, `plan.md`, `test-*.md`, `README.md`.
+1. `.opencode/tasks/<slug>/` — `review-*.md`, `plan.md`, `test-*.md`, `README.md`.
    Это основной источник: там уже сформулированы находки и что исправлено.
 2. `git log origin/<target>..HEAD` — заголовки и тела коммитов.
 3. `git diff --stat origin/<target>...HEAD` — какие области затронуты
@@ -66,7 +66,7 @@ git log --oneline origin/<target>..HEAD
 ## Как проверено
 
 - `php -l` / `node --check` — ...
-- Ручной сценарий: `.github/tests/<slug>/` — N OK, 0 FAIL
+- Ручной сценарий: `.opencode/tests/<slug>/` — N OK, 0 FAIL
 - `make aggregator-test-unit` — N тестов, OK
 
 ## Затронуто
@@ -124,8 +124,8 @@ GitLab печатает в ответ ссылку вида
 ## Шаг 5. Описание MR через API
 
 Обязательный шаг: push options описание не передают. Нужен токен
-`GITLAB_TOKEN` из `.github/.env.local` (имена переменных — в
-`.github/project-features.md`).
+`GITLAB_TOKEN` из `.opencode/.env.local` (имена переменных — в
+`.opencode/project-features.md`).
 
 - Токен в команды и логи не печатать, из `.env.local` читать в переменную
   окружения.

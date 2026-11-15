@@ -18,7 +18,7 @@ const SPEC = {
   // 1. КУДА: адрес страницы ИМЕННО ЭТОГО шага
   url: '<URL страницы шага>',
   // 2. КУДА ПИСАТЬ: абсолютный путь к снимку в папке текущей инструкции
-  //    <repo>/.github/docs/instructions/<slug>/img/<NN-имя>.png
+  //    <repo>/.opencode/docs/instructions/<slug>/img/<NN-имя>.png
   shot: '<абсолютный путь к снимку>',
   // 3. ХОЛСТ: всегда десктоп 1600×1200, без мобильной эмуляции
   viewport: { width: 1600, height: 1200 },

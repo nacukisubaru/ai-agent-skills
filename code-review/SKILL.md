@@ -21,7 +21,7 @@ description: 'Mandatory code review before every commit: security, data integrit
 4. **Проход 2 — качество.** Имена, расположение, дубли, мёртвый код.
 5. Починить то, что реально мешает читать и сопровождать.
 6. Перезапустить тесты.
-7. Записать отчёт в `.github/tasks/<slug>/review-N.md`.
+7. Записать отчёт в `.opencode/tasks/<slug>/review-N.md`.
 8. Закоммитить правки **отдельным** коммитом.
 
 ## Проход 1: что искать

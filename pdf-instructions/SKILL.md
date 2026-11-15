@@ -12,14 +12,14 @@ description: 'Создание PDF-инструкций со скриншота�
 - Просят «сделай pdf», «гайд», «регламент», «инструкцию для тестировщика».
 
 Не применять для заметок, отчётов и документации для разработчиков — они живут
-в `.github/docs/*.md`.
+в `.opencode/docs/*.md`.
 
 ## Доступы (до первой съёмки)
 
 Скилл общий для всех проектов, поэтому доступов в нём нет:
 
-1. `.github/project-features.md` — какие переменные нужны и что за стенд.
-2. `.github/.env.local` — значения.
+1. `.opencode/project-features.md` — какие переменные нужны и что за стенд.
+2. `.opencode/.env.local` — значения.
 3. `scripts/shot.mjs` читает оба файла сам (окружение имеет приоритет над файлами).
 4. **Нет доступов — спросить у пользователя.** Не угадывать пароль, не заводить
    пользователя, не вставлять доступы в HTML и скриншоты.
@@ -34,8 +34,8 @@ description: 'Создание PDF-инструкций со скриншота�
 не начинать.**
 
 ```bash
-python3 .github/skills/pdf-instructions/scripts/render-pdf-pages.py \
-  .github/skills/pdf-instructions/example/footer-links-admin-guide.pdf \
+python3 .opencode/skills/pdf-instructions/scripts/render-pdf-pages.py \
+  .opencode/skills/pdf-instructions/example/footer-links-admin-guide.pdf \
   /tmp/guide-ref
 ```
 
@@ -127,10 +127,10 @@ python3 .github/skills/pdf-instructions/scripts/render-pdf-pages.py \
 Одна команда, один размер окна, один файл описания шагов. Ничего не вырезается вручную.
 
 ```bash
-# из корня проекта: скрипт сам читает доступы из .github/.env.local
-node .github/skills/pdf-instructions/scripts/shot.mjs \
-     .github/docs/instructions/<slug>/tasks.json \
-     --out .github/docs/instructions/<slug>/img/src \
+# из корня проекта: скрипт сам читает доступы из .opencode/.env.local
+node .opencode/skills/pdf-instructions/scripts/shot.mjs \
+     .opencode/docs/instructions/<slug>/tasks.json \
+     --out .opencode/docs/instructions/<slug>/img/src \
      --window 1600x1250
 ```
 
@@ -138,13 +138,13 @@ node .github/skills/pdf-instructions/scripts/shot.mjs \
 
 ```bash
 SITE_ADMIN_EMAIL='<email>' SITE_ADMIN_PASSWORD='<password>' \
-  node .github/skills/pdf-instructions/scripts/shot.mjs ... 
+  node .opencode/skills/pdf-instructions/scripts/shot.mjs ...
 ```
 
 `tasks.json` — единственный источник правды: `url`, `waitFor`, `actions`, `scrollTo`,
 `marks` (`sel` + `expect` + `style`) и `arrows` (`from` → `to`, номера пометок). Скрипт сам
 пишет временный мост авторизации, входит, снимает и удаляет мост. `base` можно не указывать —
-возьмётся `SITE_BASE_URL` из `.github/.env.local`.
+возьмётся `SITE_BASE_URL` из `.opencode/.env.local`.
 
 ```json
 {
@@ -345,7 +345,7 @@ await page.screenshot({ path: 'img/05-step.png' });          // без fullPage
 `scripts/build-pdf.sh` собирает HTML в PDF через headless Chrome:
 
 ```bash
-.github/skills/pdf-instructions/scripts/build-pdf.sh instruction.html out.pdf
+.opencode/skills/pdf-instructions/scripts/build-pdf.sh instruction.html out.pdf
 ```
 
 Внутри — `--headless --no-pdf-header-footer --print-to-pdf`, печать A4, поля через CSS
@@ -468,7 +468,7 @@ for i, p in enumerate(r.pages, 1):
 ## Где хранить
 
 ```
-.github/docs/instructions/<slug>/
+.opencode/docs/instructions/<slug>/
 ├── instruction.html
 ├── instruction.pdf
 ├── tasks.json       # url, waitFor, actions, marks, arrows

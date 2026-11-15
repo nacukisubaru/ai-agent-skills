@@ -80,7 +80,7 @@ RETURN f.qualified_name, f.transitive_loop_depth ORDER BY 2 DESC LIMIT 20
 (`project/public/local/...`) граф не содержит.** Для них «codebase ничего не нашёл»
 ожидаемо, и grep — законный следующий шаг, а не нарушение правила.
 
-Исключения из индексации заданы в `.cbmignore` (Bitrix core, vendor, upload, `.github`).
+Исключения из индексации заданы в `.cbmignore` (Bitrix core, vendor, upload, `.opencode`).
 
 Если вопрос про `project/public/**` — сразу сказать это и перейти к grep, не тратя
 три попытки на граф.

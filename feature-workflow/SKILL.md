@@ -18,7 +18,7 @@ description: 'Planning and delivery workflow for multi-step features: task folde
 Создать в корне репозитория:
 
 ```
-.github/tasks/<slug>/
+.opencode/tasks/<slug>/
 ├── plan.md          # фазы и критерии готовности
 ├── decisions.md     # принятые решения и открытые вопросы
 ├── progress.md      # журнал: что сделано, что сломано, что дальше
@@ -32,7 +32,7 @@ description: 'Planning and delivery workflow for multi-step features: task folde
 - `<slug>` — короткий kebab-case (`notifications`, `lot-import-v2`).
 - ТЗ копируется **как есть** в `source/`, без переименования содержимого. Имя файла — латиницей.
 - Если папка уже есть — дополнять, не пересоздавать.
-- Документация фичи для людей и агентов пишется в `.github/docs/`, а не сюда. Здесь только рабочие артефакты задачи.
+- Документация фичи для людей и агентов пишется в `.opencode/docs/`, а не сюда. Здесь только рабочие артефакты задачи.
 
 ## 2. plan.md
 
