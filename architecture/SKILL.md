@@ -193,6 +193,7 @@ Admin / Bitrix\Event / Agent / Console\Command      (вход)
    объявляются здесь, а не в `install/index.php`.
 6. Миграции — добавочные в `project/public/local/php_interface/migrations/`
    (`VersionYYYYMMDDHHMMSS_*.php`, существующие не править, повторный запуск безопасен).
+   Процесс и контентные миграции — скилл `migrations`.
 7. Команды установки модулей, синхронизации событий/агентов и миграций — в
    `.opencode/project-rules.md`.
 8. `project/docs/rad/<name>.md` — что модуль делает и какие таблицы у него.
