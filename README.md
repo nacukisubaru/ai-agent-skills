@@ -20,6 +20,7 @@
 | `migrations/` | контент, данные, таблицы, поля и инфоблоки — только через `sprint.migration` |
 | `pdf-instructions/` | PDF-инструкции со скриншотами, эталон в `example/` |
 | `skill-maintenance/` | как править скиллы: коммит → подтверждение → пуш → обновление глобальной копии |
+| `testing-report/` | отчёт для тестировщика: данные, общий и критические сценарии; PDF по просьбе |
 | `ui-testing-playwright/` | проверка интерфейса в браузере |
 | `AGENTS.md` | always-on правила для всех проектов — источник истины |
 | `templates/` | `env.example`, `project-config.example.md`, `project-rules.example.md` |

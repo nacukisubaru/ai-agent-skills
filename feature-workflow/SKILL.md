@@ -24,6 +24,8 @@ description: 'Planning and delivery workflow for multi-step features: task folde
 ├── progress.md      # журнал: что сделано, что сломано, что дальше
 ├── review-1.md      # отчёты ревью по фазам
 ├── test-1.md        # результаты прогонов
+├── testing-report-phase-1.md  # как проверять фазу
+├── testing-report-final.md    # как проверять всю задачу
 └── source/          # ТЗ и приложения, как их дал пользователь
 ```
 
@@ -133,6 +135,8 @@ description: 'Planning and delivery workflow for multi-step features: task folde
 - UI проверен в браузере (если менялся фронт);
 - ревью проведено, находки critical/high исправлены;
 - отчёты записаны в папку задачи;
+- `testing-report-phase-N.md` создан по скиллу `testing-report` (PDF — только
+  если пользователь просил);
 - коммиты сделаны.
 
 ## 5. Шаблон progress.md
