@@ -2,7 +2,8 @@
 .env
 .env.*
 !.env.example
-project-features.md
+project-config.md
+project-rules.md
 *.local.md
 *.secrets.*
 

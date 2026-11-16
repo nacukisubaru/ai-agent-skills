@@ -1,175 +1,100 @@
 #!/usr/bin/env bash
-# Общий инструмент для скиллов во всех проектах.
+# Глобальная копия скиллов для OpenCode.
 #
-#   tools/skills.sh update [root]     обновить скиллы во всех проектах
-#   tools/skills.sh status [root]     показать версию скиллов в каждом проекте
-#   tools/skills.sh init <path>       подключить новый проект
+#   tools/skills.sh update     обновить ~/.config/opencode/skills из git
+#   tools/skills.sh status     показать версию глобальной копии
+#   tools/skills.sh init       создать конфиг-репозиторий и submodule скиллов
 #
-# root по умолчанию — ~/projects. Для поиска проектов не нужен .gitmodules:
-# берётся любой каталог, где .opencode/skills — git-репозиторий с origin этого
-# репозитория скиллов. Поэтому одинаково работают и сабмодуль, и обычный клон.
+# Скиллы живут в ~/.config/opencode/skills и подключены как git submodule
+# каталога ~/.config/opencode. Отдельных копий в проектах нет.
 set -uo pipefail
 
-SKILLS_REPO="$(cd "$(dirname "$0")/.." && pwd)"
-URL_PATTERN="ai-agent-skills"
-DEFAULT_ROOT="$HOME/projects"
+CONFIG_DIR="${OPENCODE_CONFIG_DIR:-$HOME/.config/opencode}"
+SKILLS_DIR="$CONFIG_DIR/skills"
+SKILLS_URL="git@github.com:nacukisubaru/ai-agent-skills.git"
 
 info() { printf '%s\n' "$*"; }
 err()  { printf '%s\n' "$*" >&2; }
 
-# Проект ли это со скиллами: <dir>/.opencode/skills — git с нужным origin.
-is_skills_project() {
-    local dir="$1/.opencode/skills"
-    [[ -d "$dir/.git" || -f "$dir/.git" ]] || return 1
-    git -C "$dir" remote get-url origin 2>/dev/null | grep -q "$URL_PATTERN" || return 1
-    return 0
-}
-
-# Версия скиллов в проекте.
-skills_sha() {
-    git -C "$1/.opencode/skills" rev-parse --short HEAD 2>/dev/null || echo '-'
-}
-
-# Обновить одну папку. Возвращает 0, если всё хорошо.
-update_one() {
-    local project="$1"
-    local dir="$project/.opencode/skills"
-    local before after
-    before="$(skills_sha "$project")"
-
-    if [[ -n "$(git -C "$dir" status --porcelain 2>/dev/null)" ]]; then
-        err "$(basename "$project"): в .opencode/skills есть незакоммиченные правки — пропущен"
-        return 1
-    fi
-
-    # fetch + merge --ff-only, а не pull: у сабмодуля HEAD может быть detached.
-    if ! git -C "$dir" fetch --quiet origin >/dev/null 2>&1; then
-        err "$(basename "$project"): не удалось сделать fetch"
-        return 1
-    fi
-    local branch
-    branch="$(git -C "$dir" symbolic-ref -q --short HEAD || echo main)"
-    if ! git -C "$dir" merge --ff-only --quiet "origin/$branch" >/dev/null 2>&1; then
-        err "$(basename "$project"): не удалось обновить (возможны расхождения с origin)"
-        return 1
-    fi
-
-    after="$(skills_sha "$project")"
-    if [[ "$before" == "$after" ]]; then
-        info "$(basename "$project"): $after (без изменений)"
-    else
-        info "$(basename "$project"): $before → $after"
-    fi
-    return 0
-}
-
-# Все проекты под root, где есть скиллы.
-find_projects() {
-    local root="$1"
-    local candidate
-    for candidate in "$root"/*/ "$root"/*/*/; do
-        local dir="${candidate%/}"
-        [[ "$dir" == "$SKILLS_REPO" ]] && continue
-        [[ "$(dirname "$dir")" == "$SKILLS_REPO" ]] && continue
-        is_skills_project "$dir" && printf '%s\n' "$dir"
-    done
-}
+config_is_git() { [[ -d "$CONFIG_DIR/.git" ]]; }
+skills_is_git() { [[ -d "$SKILLS_DIR/.git" || -f "$SKILLS_DIR/.git" ]]; }
 
 cmd_status() {
-    local root="${1:-$DEFAULT_ROOT}"
-    [[ -d "$root" ]] || { err "нет каталога: $root"; return 1; }
-    local found=0 project
-    while IFS= read -r project; do
-        found=$((found + 1))
-        local branch
-        branch="$(git -C "$project/.opencode/skills" symbolic-ref -q --short HEAD || echo detached)"
-        printf '%-28s %s  (%s)\n' "$(basename "$project")" "$(skills_sha "$project")" "$branch"
-    done < <(find_projects "$root")
-    [[ $found -eq 0 ]] && info "проектов со скиллами не найдено в $root"
+    if ! skills_is_git; then
+        err "скиллы не установлены: $SKILLS_DIR"
+        err "запустите: $0 init"
+        return 1
+    fi
+    local sha branch
+    sha="$(git -C "$SKILLS_DIR" rev-parse --short HEAD 2>/dev/null || echo '-')"
+    branch="$(git -C "$SKILLS_DIR" symbolic-ref -q --short HEAD || echo detached)"
+    printf '%-38s %s  (%s)\n' "$SKILLS_DIR" "$sha" "$branch"
     return 0
 }
 
 cmd_update() {
-    local root="${1:-$DEFAULT_ROOT}"
-    [[ -d "$root" ]] || { err "нет каталога: $root"; return 1; }
-    local found=0 failed=0 project
-    while IFS= read -r project; do
-        found=$((found + 1))
-        update_one "$project" || failed=$((failed + 1))
-    done < <(find_projects "$root")
-    info ""
-    info "проектов: $found, ошибок: $failed"
-    [[ $found -eq 0 ]] && err "подключите проект: tools/skills.sh init <path>"
-    [[ $failed -eq 0 ]]
+    if ! config_is_git; then
+        err "нет git-репозитория конфига: $CONFIG_DIR"
+        err "запустите: $0 init"
+        return 1
+    fi
+    if ! skills_is_git; then
+        err "нет submodule скиллов: $SKILLS_DIR"
+        err "запустите: $0 init"
+        return 1
+    fi
+    if [[ -n "$(git -C "$SKILLS_DIR" status --porcelain 2>/dev/null)" ]]; then
+        err "в $SKILLS_DIR есть незакоммиченные правки — пропущен"
+        return 1
+    fi
+    if ! git -C "$CONFIG_DIR" submodule update --remote --merge --init skills; then
+        err "не удалось обновить submodule skills в $CONFIG_DIR"
+        return 1
+    fi
+    cmd_status
 }
 
 cmd_init() {
-    local path="${1:-}"
-    [[ -n "$path" ]] || { err "usage: tools/skills.sh init <path>"; return 2; }
-    mkdir -p "$path" || return 1
-    path="$(cd "$path" && pwd)"
+    mkdir -p "$CONFIG_DIR" || return 1
 
-    # 1. git в папке, если его ещё нет
-    if [[ ! -d "$path/.git" ]]; then
-        git -C "$path" init -q -b main && info "git init: $path"
+    if ! config_is_git; then
+        git init -q -b main "$CONFIG_DIR" && info "git init: $CONFIG_DIR"
     fi
 
-    # 2. .gitignore: .opencode целиком локальный
-    local gi="$path/.gitignore"
-    if [[ ! -f "$gi" ]] || ! grep -qE '^(/)?\.opencode/?$|^(/)?\.opencode/\*$' "$gi"; then
+    local gi="$CONFIG_DIR/.gitignore"
+    if [[ ! -f "$gi" ]] || ! grep -q '^service\.json$' "$gi"; then
         {
             [[ -s "$gi" ]] && printf '\n'
-            printf '# Локальные данные агента: .opencode не версионируется.\n'
-            printf '# Скиллы: https://github.com/nacukisubaru/ai-agent-skills (клон в .opencode/skills).\n'
-            printf '.opencode/\n'
+            printf '# Локальное состояние OpenCode, не для git.\n'
+            printf 'service.json\n.DS_Store\n'
         } >> "$gi"
-        info ".gitignore: добавлено .opencode/"
+        info ".gitignore: service.json"
     fi
 
-    # 3. скиллы в .opencode/skills
-    local dir="$path/.opencode/skills"
-    mkdir -p "$path/.opencode"
-    if [[ -d "$dir/.git" || -f "$dir/.git" ]]; then
-        update_one "$path" || true
+    if skills_is_git; then
+        info "skills уже установлены: $SKILLS_DIR"
     else
-        if git clone -q "git@github.com:nacukisubaru/ai-agent-skills.git" "$dir"; then
-            info "skills: $(git -C "$dir" rev-parse --short HEAD)"
-        else
-            err "не удалось клонировать скиллы в $dir"
+        if [[ -e "$SKILLS_DIR" ]]; then
+            err "$SKILLS_DIR уже существует и не является git-репозиторием"
+            err "уберите его или подключите вручную как submodule"
             return 1
         fi
+        git -C "$CONFIG_DIR" submodule add "$SKILLS_URL" skills || return 1
     fi
 
-    # 4. указатель для OpenCode
-    local ptr="$path/AGENTS.md"
-    if [[ ! -f "$ptr" ]]; then
-        cat > "$ptr" <<'EOF'
-# Правила работы
-
-Все инструкции проекта лежат в одном файле:
-
-**`.opencode/skills/AGENTS.md`**
-
-Прочитать этот файл целиком **до начала любой задачи** и следовать ему как
-always-on правилам: карта скиллов, доступы, обязательный цикл, запреты.
-
-Если файла нет (не склонирован репозиторий со скиллами) — сообщить об этом
-пользователю и работать по общим правилам, а не выдумывать содержимое.
-EOF
-        info "указатель: AGENTS.md"
-    fi
-
-    # 5. локальные данные проекта (в git не идут, .opencode/ уже игнорируется)
     info ""
-    info "готово. Дальше:"
-    info "  доступы:   .opencode/.env.local (см. .opencode/skills/templates/env.example)"
-    info "  заметки:   .opencode/project-features.md (см. .opencode/skills/templates/project-features.example.md)"
+    info "Проверьте, что в $CONFIG_DIR/opencode.json есть:"
+    info '  "instructions": ["~/.config/opencode/skills/AGENTS.md"]'
+    info ""
+    info "Дальше:"
+    info "  $0 status"
+    info "  $0 update"
     return 0
 }
 
 case "${1:-}" in
-    update) shift; cmd_update "${1:-$DEFAULT_ROOT}" ;;
-    status) shift; cmd_status "${1:-$DEFAULT_ROOT}" ;;
-    init)   shift; cmd_init "${1:-}" ;;
-    *)      sed -n '2,9p' "$0" | sed 's/^# \{0,1\}//'; exit 2 ;;
+    update) cmd_update ;;
+    status) cmd_status ;;
+    init)   cmd_init ;;
+    *)      sed -n '2,8p' "$0" | sed 's/^# \{0,1\}//'; exit 2 ;;
 esac

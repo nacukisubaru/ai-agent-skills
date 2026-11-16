@@ -1,6 +1,6 @@
 ---
 name: bitrix-login
-description: 'Вход в Bitrix под администратором для проверок, скриншотов и инструкций: временный PHP-мост вместо формы входа, вход по LOGIN или EMAIL, доступы только из .opencode/project-features.md и .env.local. Use when you need an authorized Bitrix session (playwright checks, PDF instructions, manual testing), when a page asks for admin login, or when credentials must be taken from the project files.'
+description: 'Вход в Bitrix под администратором для проверок, скриншотов и инструкций: временный PHP-мост вместо формы входа, вход по LOGIN или EMAIL, доступы только из .opencode/project-config.md и .env.local. Use when you need an authorized Bitrix session (playwright checks, PDF instructions, manual testing), when a page asks for admin login, or when credentials must be taken from the project files.'
 ---
 
 # Вход в Bitrix
@@ -17,7 +17,7 @@ description: 'Вход в Bitrix под администратором для п
 
 Скилл общий для всех проектов, поэтому доступов в нём нет. Порядок всегда один:
 
-1. **`.opencode/project-features.md`** — особенности проекта: адрес стенда,
+1. **`.opencode/project-config.md`** — доступы проекта: адрес стенда,
    **имена** переменных с доступами, ожидаемый id пользователя. Файл локальный,
    в git не попадает.
 2. **`.opencode/.env.local`** — значения этих переменных. Тоже локальный.
@@ -34,7 +34,7 @@ description: 'Вход в Bitrix под администратором для п
 вход делается одноразовым PHP-скриптом, который вызывает `$USER->Login()`
 и удаляется сразу после проверки.
 
-1. Создать файл в публичной части проекта, путь из `project-features.md`
+1. Создать файл в публичной части проекта, путь из `project-config.md`
    (обычно `project/public/local/tmp-login.php`):
 
 ```php
@@ -60,7 +60,7 @@ echo $ok ? 'OK user=' . (int)$USER->GetID() : 'FAIL: ' . $USER->LAST_ERROR;
 ```
 
 2. Открыть его в браузере (или через `curl`) — должно быть `OK user=<id>`.
-   Ожидаемый id записан в `project-features.md`; другой id — это чужой пользователь,
+   Ожидаемый id записан в `project-config.md`; другой id — это чужой пользователь,
    проверять права.
 3. Перейти на нужную страницу — сессия уже есть.
 4. **Удалить файл.** Он не должен оставаться ни в рабочей копии, ни в git.

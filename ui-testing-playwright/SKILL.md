@@ -1,6 +1,6 @@
 ---
 name: ui-testing-playwright
-description: 'Browser verification with playwright-mcp: authorized session via the bitrix-login skill, UI checks, screenshots and artifacts. Credentials are never hardcoded: they come from .opencode/project-features.md and .env.local, otherwise ask the user. Use when changes touch templates, components, JavaScript, CSS, forms, modals, or when the user asks to check the interface in a browser.'
+description: 'Browser verification with playwright-mcp: authorized session via the bitrix-login skill, UI checks, screenshots and artifacts. Credentials are never hardcoded: they come from .opencode/project-config.md and .env.local, otherwise ask the user. Use when changes touch templates, components, JavaScript, CSS, forms, modals, or when the user asks to check the interface in a browser.'
 ---
 
 # UI testing with Playwright
@@ -21,14 +21,14 @@ description: 'Browser verification with playwright-mcp: authorized session via t
 
 В скилле доступов нет — он общий для всех проектов:
 
-1. `.opencode/project-features.md` — какие переменные нужны, адрес стенда,
+1. `.opencode/project-config.md` — какие переменные нужны, адрес стенда,
    ожидаемый id пользователя.
 2. `.opencode/.env.local` — значения этих переменных.
 3. Нужной переменной нет → **спросить у пользователя**, ответ дописать в `.env.local`.
 
 Способ входа зависит от платформы. Для Bitrix — скилл **`bitrix-login`**: одноразовый
 PHP-мост вместо формы входа (капча), вход по LOGIN или EMAIL, удаление файла после
-проверки. Для другой платформы — свой способ, его описывает `project-features.md`.
+проверки. Для другой платформы — свой способ, его описывает `project-config.md`.
 
 ## Что проверять
 

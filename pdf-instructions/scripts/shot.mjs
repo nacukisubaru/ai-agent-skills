@@ -15,7 +15,7 @@
  * SITE_ADMIN_EMAIL / SITE_ADMIN_PASSWORD / SITE_BASE_URL, затем файлы
  * `.opencode/.env.local`, `.env.local`, `.env` в текущем
  * каталоге (первое найденное значение выигрывает). Имена переменных и особенности
- * проекта — `.opencode/project-features.md`. Переменные окружения имеют приоритет
+ * проекта — `.opencode/project-config.md`. Переменные окружения имеют приоритет
  * над файлами, поэтому разовый запуск можно переопределить в строке команды.
  * Логин принимается и как LOGIN, и как email: мост сам подставит LOGIN.
  *
@@ -66,7 +66,7 @@ const flag = (name, fallback = null) => {
   return i === -1 ? fallback : argv[i + 1];
 };
 
-// Local credentials live outside the repo (see .opencode/project-features.md).
+// Local credentials live outside the repo (see .opencode/project-config.md).
 // Real environment variables still win over the files.
 const ENV_FILES = ['.opencode/.env.local', '.env.local', '.env'];
 
@@ -527,7 +527,7 @@ async function main() {
       throw new Error(
         'нет доступов для входа. Заполните .opencode/.env.local (SITE_ADMIN_LOGIN или SITE_ADMIN_EMAIL + SITE_ADMIN_PASSWORD)\n' +
           `  прочитанные env-файлы: ${envSources.length ? envSources.join(', ') : 'нет'}\n` +
-          '  имена переменных: .opencode/project-features.md; если доступов нет и там — спросите пользователя',
+          '  имена переменных: .opencode/project-config.md; если доступов нет и там — спросите пользователя',
       );
     }
 

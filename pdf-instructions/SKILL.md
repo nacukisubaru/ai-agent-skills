@@ -18,7 +18,7 @@ description: 'Создание PDF-инструкций со скриншота�
 
 Скилл общий для всех проектов, поэтому доступов в нём нет:
 
-1. `.opencode/project-features.md` — какие переменные нужны и что за стенд.
+1. `.opencode/project-config.md` — какие переменные нужны и что за стенд.
 2. `.opencode/.env.local` — значения.
 3. `scripts/shot.mjs` читает оба файла сам (окружение имеет приоритет над файлами).
 4. **Нет доступов — спросить у пользователя.** Не угадывать пароль, не заводить
@@ -34,8 +34,8 @@ description: 'Создание PDF-инструкций со скриншота�
 не начинать.**
 
 ```bash
-python3 .opencode/skills/pdf-instructions/scripts/render-pdf-pages.py \
-  .opencode/skills/pdf-instructions/example/footer-links-admin-guide.pdf \
+python3 ~/.config/opencode/skills/pdf-instructions/scripts/render-pdf-pages.py \
+  ~/.config/opencode/skills/pdf-instructions/example/footer-links-admin-guide.pdf \
   /tmp/guide-ref
 ```
 
@@ -128,7 +128,7 @@ python3 .opencode/skills/pdf-instructions/scripts/render-pdf-pages.py \
 
 ```bash
 # из корня проекта: скрипт сам читает доступы из .opencode/.env.local
-node .opencode/skills/pdf-instructions/scripts/shot.mjs \
+node ~/.config/opencode/skills/pdf-instructions/scripts/shot.mjs \
      .opencode/docs/instructions/<slug>/tasks.json \
      --out .opencode/docs/instructions/<slug>/img/src \
      --window 1600x1250
@@ -138,7 +138,7 @@ node .opencode/skills/pdf-instructions/scripts/shot.mjs \
 
 ```bash
 SITE_ADMIN_EMAIL='<email>' SITE_ADMIN_PASSWORD='<password>' \
-  node .opencode/skills/pdf-instructions/scripts/shot.mjs ...
+  node ~/.config/opencode/skills/pdf-instructions/scripts/shot.mjs ...
 ```
 
 `tasks.json` — единственный источник правды: `url`, `waitFor`, `actions`, `scrollTo`,
@@ -345,7 +345,7 @@ await page.screenshot({ path: 'img/05-step.png' });          // без fullPage
 `scripts/build-pdf.sh` собирает HTML в PDF через headless Chrome:
 
 ```bash
-.opencode/skills/pdf-instructions/scripts/build-pdf.sh instruction.html out.pdf
+~/.config/opencode/skills/pdf-instructions/scripts/build-pdf.sh instruction.html out.pdf
 ```
 
 Внутри — `--headless --no-pdf-header-footer --print-to-pdf`, печать A4, поля через CSS

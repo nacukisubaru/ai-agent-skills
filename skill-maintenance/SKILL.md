@@ -1,6 +1,6 @@
 ---
 name: skill-maintenance
-description: 'Обновление самих скиллов: где лежит общий репозиторий скиллов, как править и коммитить, обязательное подтверждение перед пушем, пуш и затем синхронизация `.opencode/skills` во всех проектах. Use when the user asks to create, edit or fix a skill, when a skill is out of date with the project, after changing AGENTS.md, or when skills must be distributed to other projects.'
+description: 'Обновление самих скиллов: где лежит общий репозиторий скиллов, как править и коммитить, обязательное подтверждение перед пушем, пуш и затем синхронизация глобальной копии `~/.config/opencode/skills` во всех проектах. Use when the user asks to create, edit or fix a skill, when a skill is out of date with the project, after changing AGENTS.md, or when skills must be distributed to other projects.'
 ---
 
 # Обслуживание скиллов
@@ -11,8 +11,9 @@ description: 'Обновление самих скиллов: где лежит 
 |---|---|
 | Общий репозиторий скиллов (рабочая копия) | `/Users/aleksandrkrestinskij/projects/skills` |
 | Remote | `git@github.com:nacukisubaru/ai-agent-skills.git`, ветка `main` |
-| В проекте | `.opencode/skills` — **git submodule** этого репозитория |
-| Локальные данные проекта (в git не идут) | `.opencode/project-features.md`, `.opencode/.env.local` |
+| Глобальная копия OpenCode | `~/.config/opencode/skills` — **git submodule** каталога `~/.config/opencode` |
+| Конфиг OpenCode | `~/.config/opencode/opencode.json` — `instructions` на `~/.config/opencode/skills/AGENTS.md` |
+| Локальные данные проекта (в git не идут) | `.opencode/project-config.md`, `.opencode/project-rules.md`, `.opencode/.env.local` |
 
 ```bash
 cd /Users/aleksandrkrestinskij/projects/skills
@@ -21,8 +22,8 @@ git pull --ff-only         # перед правкой, если работал�
 ```
 
 **Править скиллы только в `/Users/aleksandrkrestinskij/projects/skills`.** Копия в
-`.opencode/skills` любого проекта — это checkout того же репозитория: правка там
-попадёт в чужой проект и потеряется при следующем обновлении сабмодуля.
+`~/.config/opencode/skills` — это checkout того же репозитория: правка там
+потеряется при следующем обновлении. Отдельных копий скиллов в проектах нет.
 
 ## Порядок работы
 
@@ -39,7 +40,7 @@ git pull --ff-only         # перед правкой, если работал�
 4. **Коммит.** Сообщение на английском, императив, до ~72 символов.
 5. **Подтверждение пуша.** После коммита **не пушить сразу**: спросить у
    пользователя разрешение (правило проекта «не пушить без подтверждения»).
-   Один вопрос, варианты: «запушить и обновить `.opencode/skills`», «только коммит».
+   Один вопрос, варианты: «запушить и обновить глобальные скиллы», «только коммит».
 6. **Пуш** (после подтверждения):
 
    ```bash
@@ -47,43 +48,36 @@ git pull --ff-only         # перед правкой, если работал�
    git push origin main
    ```
 
-7. **Синхронизация проектов.** Обновить `.opencode/skills` во всех проектах, где он подключён:
+7. **Синхронизация OpenCode.** Обновить глобальный submodule:
 
    ```bash
-   /Users/aleksandrkrestinskij/projects/skills/tools/skills.sh update            # все проекты
-   /Users/aleksandrkrestinskij/projects/skills/tools/skills.sh update /path/to/projects
+   /Users/aleksandrkrestinskij/projects/skills/tools/skills.sh update
    ```
 
-   Скрипт находит проекты с `.opencode/skills`, указывающим на этот репозиторий,
-   и обновляет его через `fetch` + `merge --ff-only`, печатая, где изменился SHA.
-8. **Коммит указателя в проекте** — отдельно и только по подтверждению: обновление
-   сабмодуля меняет указатель `.opencode/skills` в индексе проекта, это изменение
-   коммитится в ветку проекта как обычное.
+   Скрипт делает `git submodule update --remote --merge skills` в
+   `~/.config/opencode` и печатает новый SHA. В проектах ничего обновлять не нужно.
+
+8. **Проверка.** `tools/skills.sh status` должен показать новый SHA. OpenCode
+   подхватывает обновлённые скиллы из `~/.config/opencode/skills` автоматически.
 
 ## Скрипт синхронизации
 
 `tools/skills.sh`:
 
-- сканирует каталоги проектов (по умолчанию `/Users/aleksandrkrestinskij/projects`),
-  сам репозиторий скиллов пропускает;
-- ищет каталоги, где `.opencode/skills` — git-репозиторий с `origin` этого репозитория;
-  `.gitmodules` не нужен, поэтому находятся и сабмодули, и обычные клоны;
-- обновляет через `git -C <project>/.opencode/skills fetch` +
-  `merge --ff-only origin/<ветка>`; ветка определяется по HEAD, при detached — `main`
-  (обычный `pull` в detached состоянии ругается);
-- подкоманда `init <path>`: `git init`, `.opencode/` в `.gitignore`, клон скиллов,
-  указатель `AGENTS.md`; повторный запуск безопасен;
-- подкоманда `status` печатает версию скиллов в каждом проекте;
-- печатает `проект: старый SHA → новый SHA`;
-- ничего не коммитит и не пушит. Ошибка в одном проекте не останавливает остальные,
-  в конце печатается сводка.
+- `update` — обновляет submodule `skills` в `~/.config/opencode` из `origin/main`;
+- `status` — показывает SHA и ветку глобальной копии;
+- `init` — создаёт git-репозиторий конфига, добавляет submodule и подсказывает
+  строку `instructions`; повторный запуск безопасен;
+- не сканирует проекты: скиллы теперь только глобальные;
+- ничего не коммитит и не пушит в репозитории скиллов.
 
 ## Что запрещено
 
 - Пушить без явного подтверждения пользователя.
 - Пушить в `stage` и `dev` (это не касается репозитория скиллов, у него только `main`).
-- Править `.opencode/skills/*` внутри проекта вместо `/Users/aleksandrkrestinskij/projects/skills`.
+- Править `~/.config/opencode/skills/*` вместо `/Users/aleksandrkrestinskij/projects/skills`.
 - Коммитить `.opencode/**` — там доступы; эти пути в `.gitignore`.
 - Оставлять скилл без строки в карте скиллов и без записи в `README.md`.
 - Вставлять в скилл доступы, адреса стендов и названия конкретных проектов:
-  скилл общий, данные проекта — в `.opencode`.
+  скилл общий, данные проекта — в `.opencode/project-config.md` и
+  `.opencode/project-rules.md`.

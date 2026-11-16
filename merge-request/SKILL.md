@@ -67,7 +67,7 @@ git log --oneline origin/<target>..HEAD
 
 - `php -l` / `node --check` — ...
 - Ручной сценарий: `.opencode/tests/<slug>/` — N OK, 0 FAIL
-- `make aggregator-test-unit` — N тестов, OK
+- `<команда тестов из .opencode/project-rules.md>` — N тестов, OK
 
 ## Затронуто
 
@@ -125,7 +125,7 @@ GitLab печатает в ответ ссылку вида
 
 Обязательный шаг: push options описание не передают. Нужен токен
 `GITLAB_TOKEN` из `.opencode/.env.local` (имена переменных — в
-`.opencode/project-features.md`).
+`.opencode/project-config.md`).
 
 - Токен в команды и логи не печатать, из `.env.local` читать в переменную
   окружения.

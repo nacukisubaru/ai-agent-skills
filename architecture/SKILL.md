@@ -193,8 +193,8 @@ Admin / Bitrix\Event / Agent / Console\Command      (вход)
    объявляются здесь, а не в `install/index.php`.
 6. Миграции — добавочные в `project/public/local/php_interface/migrations/`
    (`VersionYYYYMMDDHHMMSS_*.php`, существующие не править, повторный запуск безопасен).
-7. `make bitrix-modules-install`, `make bitrix-events-sync`, `make bitrix-agents-install`,
-   `make migrations-migrate`.
+7. Команды установки модулей, синхронизации событий/агентов и миграций — в
+   `.opencode/project-rules.md`.
 8. `project/docs/rad/<name>.md` — что модуль делает и какие таблицы у него.
 
 Разметка: в модуле **нет** папки `templates/`. Модуль — это код. Шаблоны, стили и
@@ -210,16 +210,13 @@ Admin / Bitrix\Event / Agent / Console\Command      (вход)
 | HTTP-контракт | `project/tests/Functional/` | `Rad\Tests\Functional` |
 
 `<Area>` совпадает с папкой модуля (`Notifications`, `Stats`, `Search`). Новый
-сервис без теста на правило — незаконченная работа:
-`make aggregator-test-unit` или `make aggregator-test-integration`.
+сервис без теста на правило — незаконченная работа. Команды unit/integration —
+в `.opencode/project-rules.md`.
 
 ## Шаг 9. Проверка перед коммитом
 
-```bash
-make aggregator-php-lint      # php -l по изменённым файлам
-make aggregator-test-unit     # unit
-make aggregator-cs            # стиль
-```
+Команды lint, unit и стиля — в `.opencode/project-rules.md`. Ниже — только порядок:
+сначала lint, потом тесты, потом стиль, затем ручная проверка.
 
 И глазами:
 

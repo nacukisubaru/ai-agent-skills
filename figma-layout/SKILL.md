@@ -19,7 +19,7 @@ https://www.figma.com/design/{FILE_KEY}/...?node-id={A}-{B}&...
 ## Токен
 
 Токен в скилле не хранится. Он лежит в `.opencode/.env.local` под именем
-`FIGMA_TOKEN` (файл в git не попадает, имена переменных — в `project-features.md`).
+`FIGMA_TOKEN` (файл в git не попадает, имена переменных — в `project-config.md`).
 В запросах передаётся заголовком `X-Figma-Token`.
 
 ```bash
