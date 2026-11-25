@@ -5,6 +5,10 @@ description: 'Bitrix components, templates, assets and migrations in this projec
 
 # Bitrix component
 
+Если задача про вёрстку по готовому макету (Figma, HTML, скриншоты), сначала
+загрузи `layout-from-mockup`: он задаёт границы поверхности, запрет старых
+стилей и parity-тест. Этот скилл — про реализацию компонентов и ассетов.
+
 ## Структура компонента
 
 ```

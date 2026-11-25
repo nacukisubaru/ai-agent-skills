@@ -13,7 +13,8 @@
 | `code-review/` | обязательное ревью диффа перед коммитом |
 | `codebase-memory/` | порядок поиска по коду: граф → grep |
 | `feature-workflow/` | план фаз, папка задачи, definition of done |
-| `figma-layout/` | вёрстка по макету через Figma REST API |
+| `figma-layout/` | получение макета через Figma REST API: узлы, геометрия, PNG |
+| `layout-from-mockup/` | внедрение макета (Figma, HTML, скриншоты): слепок, границы задачи, полная замена блока, CSS-изоляция, parity-тест |
 | `git-commits/` | разбиение на коммиты, сообщения, пуш |
 | `manual-testing/` | ручной сценарий проверки бэкенда |
 | `merge-request/` | пуш ветки и MR в `dev` с саммари изменений |

@@ -62,7 +62,7 @@
 | Пуш ветки и создание MR в `dev` | `merge-request` |
 | Правка самих скиллов: коммит → подтверждение → пуш → обновление глобального `~/.config/opencode/skills` | `skill-maintenance` |
 | Поиск по коду, индексация | `codebase-memory` |
-| Вёрстка по макету Figma | `figma-layout` |
+| Вёрстка/внедрение по макету: Figma, готовый HTML/ZIP, скриншоты; полная замена блока без старых стилей | `layout-from-mockup` + `figma-layout` для Figma |
 | PDF-инструкция со скриншотами (сначала разбор эталона `~/.config/opencode/skills/pdf-instructions/example/footer-links-admin-guide.pdf`) | `pdf-instructions` |
 
 ## Поиск по коду: сначала codebase-memory
